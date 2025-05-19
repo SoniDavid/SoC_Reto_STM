@@ -1,0 +1,4 @@
+../Src/user_uart.c:14:6:USER_UART1_Init	1
+../Src/user_uart.c:49:13:USER_USART1_Send_8bit	2
+../Src/user_uart.c:54:6:USER_UART1_Transmit	2
+../Src/user_uart.c:60:9:USER_UART1_Receive_8bit	2
