@@ -1,2 +1,3 @@
 ../Src/user_tim.c:12:6:USER_TIM3_PWM_Init	1
-../Src/user_tim.c:115:10:USER_Duty_Cycle	2
+../Src/user_tim.c:116:10:USER_Duty_Cycle	2
+../Src/user_tim.c:125:6:USER_Set_PWM_Duty	1

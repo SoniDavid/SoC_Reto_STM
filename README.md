@@ -14,3 +14,12 @@ Implement clock configuration for 48 MHz
 
 ### user_uart
 Implement Full-Duplex uart transmission with PA9 and PA10
+
+## GPIOs
+- PA9 (D8): TX uart 
+- PA10 (D2): RX uart
+- PA6 (D12): push button
+- PB4 (D5):PWM signal CH1
+- PB5 (D6):PWM signal CH2
+- PB6 (D1):PWM signal CH3
+- PB7 (D2):PWM signal CH4

@@ -1,3 +1,4 @@
+"./Src/gpio_init.o"
 "./Src/main.o"
 "./Src/rcc_init.o"
 "./Src/syscalls.o"

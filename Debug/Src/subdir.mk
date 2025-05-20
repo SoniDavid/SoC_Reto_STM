@@ -5,6 +5,7 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Src/gpio_init.c \
 ../Src/main.c \
 ../Src/rcc_init.c \
 ../Src/syscalls.c \
@@ -13,6 +14,7 @@ C_SRCS += \
 ../Src/user_uart.c 
 
 OBJS += \
+./Src/gpio_init.o \
 ./Src/main.o \
 ./Src/rcc_init.o \
 ./Src/syscalls.o \
@@ -21,6 +23,7 @@ OBJS += \
 ./Src/user_uart.o 
 
 C_DEPS += \
+./Src/gpio_init.d \
 ./Src/main.d \
 ./Src/rcc_init.d \
 ./Src/syscalls.d \
@@ -36,7 +39,7 @@ Src/%.o Src/%.su Src/%.cyclo: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/rcc_init.cyclo ./Src/rcc_init.d ./Src/rcc_init.o ./Src/rcc_init.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/user_tim.cyclo ./Src/user_tim.d ./Src/user_tim.o ./Src/user_tim.su ./Src/user_uart.cyclo ./Src/user_uart.d ./Src/user_uart.o ./Src/user_uart.su
+	-$(RM) ./Src/gpio_init.cyclo ./Src/gpio_init.d ./Src/gpio_init.o ./Src/gpio_init.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/rcc_init.cyclo ./Src/rcc_init.d ./Src/rcc_init.o ./Src/rcc_init.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/user_tim.cyclo ./Src/user_tim.d ./Src/user_tim.o ./Src/user_tim.su ./Src/user_uart.cyclo ./Src/user_uart.d ./Src/user_uart.o ./Src/user_uart.su
 
 .PHONY: clean-Src
 

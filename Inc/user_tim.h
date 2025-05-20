@@ -44,5 +44,6 @@ typedef struct
 
 void USER_TIM3_PWM_Init( void );
 uint16_t USER_Duty_Cycle( uint8_t duty );
+void USER_Set_PWM_Duty(uint8_t duty_percent);
 
 #endif /* USER_TIM_H_ */

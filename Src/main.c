@@ -15,8 +15,8 @@
 // #include "user_keypad.h"
 #include "user_tim.h"
 #include "rcc_init.h"
-
-void USER_GPIO_Init(void);
+#include "gpio_init.h"
+#include "user_uart.h"
 
 /* Superloop structure */
 int main(void)
@@ -27,9 +27,7 @@ int main(void)
 
     /* Repetitive block */
     for(;;){
-//      GPIOA->ODR |= (0x1UL << 5);   // LED1
-//      GPIOA->ODR |= (0x1UL << 6);   // LED2
-//      GPIOA->ODR |= (0x1UL << 7);   // LED3
-//      GPIOA->ODR |= (0x1UL << 9);   // LED4
+    // include function for PA6 (push button debounce)
+    // include function for controlling PWM from main file
     }
   }

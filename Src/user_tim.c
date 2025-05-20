@@ -112,6 +112,7 @@ void USER_TIM3_PWM_Init( void ){
 	TIM3->CR1	|=  ( 0x1UL <<  0U );
 }
 
+// function used internally for initialization
 uint16_t USER_Duty_Cycle( uint8_t duty ){
 	/* duty can be a value between 0% and 100% */
 	if( duty <= 100 )
@@ -119,3 +120,13 @@ uint16_t USER_Duty_Cycle( uint8_t duty ){
 	else
 		return 0;
 }
+
+// function to be used in main.c
+void USER_Set_PWM_Duty(uint8_t duty_percent) {
+	uint16_t duty = USER_Duty_Cycle(duty_percent);
+	TIM3->CCR1 = duty;
+	TIM3->CCR2 = duty;
+	TIM3->CCR3 = duty;
+	TIM3->CCR4 = duty;
+}
+
