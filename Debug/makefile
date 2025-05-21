@@ -59,8 +59,8 @@ all: main-build
 main-build: SoC_Reto_STM.elf secondary-outputs
 
 # Tool invocations
-SoC_Reto_STM.elf SoC_Reto_STM.map: $(OBJS) $(USER_OBJS) /home/soni/SoC_Reto_STM/STM32C031C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "SoC_Reto_STM.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"/home/soni/SoC_Reto_STM/STM32C031C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SoC_Reto_STM.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+SoC_Reto_STM.elf SoC_Reto_STM.map: $(OBJS) $(USER_OBJS) D:\DocumentFiles\TEC\Semestre\ 4\ IRS\Chips\SoC_Reto_STM\STM32C031C6TX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "SoC_Reto_STM.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m0plus -T"D:\DocumentFiles\TEC\Semestre 4 IRS\Chips\SoC_Reto_STM\STM32C031C6TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SoC_Reto_STM.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

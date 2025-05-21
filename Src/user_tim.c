@@ -9,6 +9,9 @@
 #include "user_tim.h"
 //
 
+volatile uint8_t g_pwm_duty = 80; // initial duty (percent)
+/* CHECK IF G_PWM_DUTY actually works as intended for button interface*/
+
 void USER_TIM3_PWM_Init( void ){
 	/* STEP 0 Enable the clock signal for the TIM3 and GPIOB peripherals */
 	RCC->IOPENR  |= (1U << 1);  // Enable GPIOB clock

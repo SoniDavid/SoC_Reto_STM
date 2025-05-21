@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000028  00000000  00000000  00002f40  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000078c  00000000  00000000  00002f68  2**0
+ 12 .debug_info   00000858  00000000  00000000  00002f68  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 0000024a  00000000  00000000  000036f4  2**0
+ 13 .debug_abbrev 00000293  00000000  00000000  000037c0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000098  00000000  00000000  00003940  2**3
+ 14 .debug_aranges 000000a0  00000000  00000000  00003a58  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 0000005f  00000000  00000000  000039d8  2**0
+ 15 .debug_rnglists 00000065  00000000  00000000  00003af8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00000d5c  00000000  00000000  00003a37  2**0
+ 16 .debug_macro  00000d6f  00000000  00000000  00003b5d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00000e08  00000000  00000000  00004793  2**0
+ 17 .debug_line   0000109b  00000000  00000000  000048cc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000079a8  00000000  00000000  0000559b  2**0
+ 18 .debug_str    000079e8  00000000  00000000  00005967  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  0000cf43  2**0
+ 19 .comment      00000043  00000000  00000000  0000d34f  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00000330  00000000  00000000  0000cf88  2**2
+ 20 .debug_frame  0000034c  00000000  00000000  0000d394  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000041  00000000  00000000  0000d2b8  2**0
+ 21 .debug_line_str 00000060  00000000  00000000  0000d6e0  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -3314,8 +3314,8 @@ Disassembly of section .text:
  8001a74:	000007ff 	.word	0x000007ff
 
 08001a78 <main>:
-#include "gpio_init.h"
-#include "user_uart.h"
+
+void USER_GPIO_Init( void );
 
 /* Superloop structure */
 int main(void)
@@ -3405,10 +3405,10 @@ void USER_RCC_Init( void ){
  8001af8:	fffff7ff 	.word	0xfffff7ff
 
 08001afc <USER_TIM3_PWM_Init>:
-
-#include <stdint.h>
-#include "user_tim.h"
 //
+
+volatile uint8_t g_pwm_duty = 80; // initial duty (percent)
+/* CHECK IF G_PWM_DUTY actually works as intended for button interface*/
 
 void USER_TIM3_PWM_Init( void ){
  8001afc:	b590      	push	{r4, r7, lr}

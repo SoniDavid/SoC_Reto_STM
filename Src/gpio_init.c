@@ -18,3 +18,18 @@ void USER_GPIO_Init( void ){
   GPIOA->PUPDR = GPIOA->PUPDR | (0x1UL << 12U);
   GPIOA->MODER = GPIOA->MODER & ~(0x3UL << 12U);
 }
+
+void USER_Delay(void){
+  __asm(" ldr r0, =12999");
+  __asm(" again: sub r0, r0, #1");
+  __asm(" cmp r0, #0");
+  __asm(" bne again");
+  __asm(" nop");
+  __asm(" nop");
+  __asm(" nop");
+  __asm(" nop");
+  __asm(" nop");
+  __asm(" nop");
+}
+
+
