@@ -8,9 +8,7 @@
 #include "main.h"
 
 void USER_GPIO_Init( void ){
-  /* Enable GPIOA clock (creo que ya lo inicializo con UART),
-   * see if uart should be initalize also here
-   */
+
   RCC->IOPENR	  = RCC->IOPENR   |  ( 0x1UL <<  0U );
 
   // Configure PA6 as input w pull up
@@ -19,6 +17,7 @@ void USER_GPIO_Init( void ){
   GPIOA->MODER = GPIOA->MODER & ~(0x3UL << 12U);
 }
 
+/* Delay using Assembly */
 void USER_Delay(void){
   __asm(" ldr r0, =12999");
   __asm(" again: sub r0, r0, #1");
@@ -32,4 +31,5 @@ void USER_Delay(void){
   __asm(" nop");
 }
 
+/* Delay using TIM14 */
 

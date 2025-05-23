@@ -1,0 +1,2 @@
+../Src/delays.c:10:6:delay_ms	24	static,ignoring_inline_asm
+../Src/delays.c:15:6:delay_us	32	static,ignoring_inline_asm

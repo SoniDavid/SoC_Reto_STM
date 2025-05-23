@@ -17,34 +17,30 @@
 #include "gpio_init.h"
 #include "user_uart.h"
 
-
-void USER_GPIO_Init( void );
+void Break_PWM( void );		// Use push button to break PWM
 
 /* Superloop structure */
 int main(void)
 {
-	/* Declarations and Initializations */
-  USER_RCC_Init( );
-  USER_TIM3_PWM_Init( );
+	/* Initialization of Peripherals */
+	USER_RCC_Init( ); 			// Set CLK to 48MHz
+	USER_UART1_Init( );			// Enable Full-Duplex UART communication
+  USER_TIM3_PWM_Init( );	// Set TIM3 CH1-4 to PWM
+  USER_GPIO_Init( );			// Initialize push button (break)
 
-    /* Repetitive block */
-    for(;;){
-    // include function for PA6 (push button debounce)
-    // include function for controlling PWM from main file
-    }
- }
+  //Set initial values
+  USER_Set_PWM_Duty(0);		// set initial PWM value to be 0
 
+  for(;;){
 
-void PA6_ButtonCheck( void ) {
+  }
+}
+
+void Break_PWM( void ) {
   if (!(GPIOA->IDR & (1UL << 6))) {  // Button press detected (logic low)
     USER_Delay();
-
       if (!(GPIOA->IDR & (1UL << 6))) {  // Double-check press
-	    // ======= DO SOME TASK HERE =======
-	    /* probablemente actualizar una variable global que haga
-	     * que el PWM baje
-         */
-		// USER_Set_PWM_Duty(50);
+//      	void USER_Set_PWM_Duty();
 		// Wait for button release
 		while (!(GPIOA->IDR & (1UL << 6)));
             USER_Delay();

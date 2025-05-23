@@ -8,7 +8,8 @@
 #ifndef GPIO_INIT_H_
 #define GPIO_INIT_H_
 
-void USER_Delay( void );
-void PA6_ButtonCheck( void );
+void USER_GPIO_Init(void);
+void USER_Delay(void);
+void PA6_ButtonCheck(void);
 
 #endif /* GPIO_INIT_H_ */
