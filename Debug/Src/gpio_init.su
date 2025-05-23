@@ -1,2 +1,2 @@
 ../Src/gpio_init.c:10:6:USER_GPIO_Init	8	static
-../Src/gpio_init.c:21:6:USER_Delay	8	static,ignoring_inline_asm
+../Src/gpio_init.c:28:6:USER_Delay	8	static,ignoring_inline_asm

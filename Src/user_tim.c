@@ -110,6 +110,41 @@ void USER_TIM3_PWM_Init( void ){
 	TIM3->CR1	|=  ( 0x1UL <<  0U );
 }
 
+void USER_TIM14_Init(void){
+
+	/*Enable clock signal for timer 14*/
+	RCC->APBENR2 |= (1U << 15); // Enable TIM14 clock
+
+	/*Enable internal clock source is not needed*/
+
+	// Configure auto-reload preload, counter mode, and overflow
+	TIM14->CR1 |= (1UL << 7U);    // ARPE = 1 (Enable preload)
+	TIM14->CR1 |= (1UL << 3U);   // OPM = 1 (Continuous mode)
+	TIM14->CR1 &= ~(1UL << 2U);   // URS = 0 (Allow any source to generate UEV)
+	TIM14->CR1 &= ~(1UL << 1U);   // UDIS = 0 (Enable UEV)
+}
+
+void USER_TIM14_Delay(uint16_t prescaler, uint16_t AutoReload){
+
+	// Configure Prescaler
+	TIM14->PSC = prescaler;
+
+	// Configure Auto Reload
+	TIM14->ARR = AutoReload;
+
+	//Clear TImer Update Interrupt Flag
+	TIM14->SR &= ~(1UL << 0U);
+
+	//Enable Counter
+	TIM14->CR1 |= (1UL << 0U);
+
+  // Wait until update event (UIF = 1)
+  while (!(TIM14->SR & (1UL << 0U)));
+  // Clear update flag again if needed
+  TIM14->SR &= ~(1UL << 0U);
+}
+
+
 // function used internally for initialization
 uint16_t USER_Duty_Cycle( uint8_t duty ){
 	/* duty can be a value between 0% and 100% */

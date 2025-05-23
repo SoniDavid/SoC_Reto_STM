@@ -5,6 +5,7 @@
 "./Src/rcc_init.o"
 "./Src/syscalls.o"
 "./Src/sysmem.o"
+"./Src/user_adc.o"
 "./Src/user_tim.o"
 "./Src/user_uart.o"
 "./Startup/startup_stm32c031c6tx.o"

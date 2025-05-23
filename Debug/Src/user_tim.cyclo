@@ -1,4 +1,6 @@
 ../Src/user_tim.c:11:6:USER_TIM3_PWM_Init	1
-../Src/user_tim.c:114:10:USER_Duty_Cycle	2
-../Src/user_tim.c:123:6:USER_Set_PWM_Duty	1
-../Src/user_tim.c:131:6:USER_Change_PWM_Duty	3
+../Src/user_tim.c:113:6:USER_TIM14_Init	1
+../Src/user_tim.c:127:6:USER_TIM14_Delay	2
+../Src/user_tim.c:149:10:USER_Duty_Cycle	2
+../Src/user_tim.c:158:6:USER_Set_PWM_Duty	1
+../Src/user_tim.c:166:6:USER_Change_PWM_Duty	3

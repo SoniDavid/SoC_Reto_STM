@@ -42,8 +42,13 @@ typedef struct
 #define TIM3_BASE	0x40000400UL//	TIM3 base address
 #define TIM3    	(( TIM_TypeDef * )TIM3_BASE )
 
-void USER_TIM3_PWM_Init( void );
-uint16_t USER_Duty_Cycle( uint8_t duty );
+#define TIM14_BASE 0x40002000UL //TIM14 base address
+#define TIM14 ((TIM_TypeDef *) TIM14_BASE)
+
+void USER_TIM3_PWM_Init(void);
+void USER_TIM14_Init(void); // Defined for using as debouunce timing
+void USER_TIM14_Delay(uint16_t prescaler, uint16_t AutoReload);
+uint16_t USER_Duty_Cycle(uint8_t duty);
 void USER_Set_PWM_Duty(uint8_t duty_percent);
 
 #endif /* USER_TIM_H_ */
