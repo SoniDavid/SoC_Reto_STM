@@ -16,7 +16,7 @@ Implement clock configuration for 48 MHz
 Implement Full-Duplex uart transmission with PA9 and PA10
 
 ## GPIOs
-- PA0 		: ADC Potentiometer
+- PA0 		: ADC Potentiometer // LCD ESTO SE NECESITA CAMBIAR!!
 - PA5 		: Not defined use, but configured in LCD base code
 - PA9 (D8)	: TX uart 
 - PA10 (D2)	: RX uart

@@ -13,18 +13,18 @@
 
 void USER_UART1_Init(void){
 	/* STEP 0. Enable the clock peripheral for the USART1 and the GPIOA*/
-	RCC->IOPENR	= RCC->IOPENR   |  ( 0x1UL <<  0U );
-	RCC->APBENR2  = RCC->APBENR2  |  ( 0x1UL << 14U );
+	RCC->IOPENR	= RCC->IOPENR   |  (0x1UL << 0U);
+	RCC->APBENR2  = RCC->APBENR2 | (0x1UL << 14U);
 	/* STEP 0. Configure the TX pin (PA9) as Alternate Function Push-Pul*/
-	GPIOA->AFRH = GPIOA->AFRH & ~( 0xEUL <<  4U ); // Select the AF1 for the PA9
-	GPIOA->AFRH = GPIOA->AFRH |  ( 0x1UL <<  4U ); // Select the AF1 for the PA9
-	GPIOA->PUPDR  = GPIOA->PUPDR  & ~( 0x3UL << 18U ); // Clear pull-up/pull-down bits for PA9
-	GPIOA->OTYPER = GPIOA->OTYPER & ~( 0x1UL <<  9U ); // Clear output type bit for PA9
-	GPIOA->MODER  = GPIOA->MODER  & ~( 0x1UL << 18U ); // Set PA9 as AF
-	GPIOA->MODER  = GPIOA->MODER  |  ( 0x2UL << 18U ); // Set PA9 as AF
+	GPIOA->AFRH = GPIOA->AFRH & ~(0xEUL << 4U); // Select the AF1 for the PA9
+	GPIOA->AFRH = GPIOA->AFRH | (0x1UL << 4U); // Select the AF1 for the PA9
+	GPIOA->PUPDR  = GPIOA->PUPDR & ~(0x3UL << 18U); // Clear pull-up/pull-down bits for PA9
+	GPIOA->OTYPER = GPIOA->OTYPER & ~(0x1UL << 9U); // Clear output type bit for PA9
+	GPIOA->MODER  = GPIOA->MODER  & ~(0x1UL << 18U); // Set PA9 as AF
+	GPIOA->MODER  = GPIOA->MODER  |  (0x2UL << 18U); // Set PA9 as AF
 	/* RX pin (PA10)*/
-	GPIOA->AFRH = GPIOA->AFRH & ~( 0xEUL <<  8U );
-	GPIOA->AFRH = GPIOA->AFRH |  ( 0x1UL <<  8U );
+	GPIOA->AFRH = GPIOA->AFRH 		& ~(0xEUL << 8U);
+	GPIOA->AFRH = GPIOA->AFRH 		| (0x1UL << 8U);
 	GPIOA->PUPDR  = GPIOA->PUPDR  & ~( 0x3UL << 20U ); // Clear pull-up/pull-down bits for PA10
 	GPIOA->OTYPER = GPIOA->OTYPER & ~( 0x1UL <<  10U ); // Clear output type bit for PA10
 	GPIOA->MODER  = GPIOA->MODER  & ~( 0x1UL << 20U ); // Set PA10 as AF
@@ -32,6 +32,7 @@ void USER_UART1_Init(void){
 	/* STEP 1. Program the M bits in USART_CR1 to define the word length (8 bits)*/
 	USART1->CR1   = USART1->CR1   & ~( 0x1UL << 28U );
 	USART1->CR1   = USART1->CR1   & ~( 0x1UL << 12U );
+
 	// Recibir
 	USART1->CR1 = USART1->CR1 | (0x1UL << 0U);  // UE (USART Enable)
 	USART1->CR1 = USART1->CR1 | (0x1UL << 3U);  // TE (Transmitter Enable)

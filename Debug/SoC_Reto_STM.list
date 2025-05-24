@@ -5051,14 +5051,14 @@ void USER_UART1_Init(void){
  8002568:	b580      	push	{r7, lr}
  800256a:	af00      	add	r7, sp, #0
 	/* STEP 0. Enable the clock peripheral for the USART1 and the GPIOA*/
-	RCC->IOPENR	= RCC->IOPENR   |  ( 0x1UL <<  0U );
+	RCC->IOPENR	= RCC->IOPENR   |  (0x1UL << 0U);
  800256c:	4b52      	ldr	r3, [pc, #328]	@ (80026b8 <USER_UART1_Init+0x150>)
  800256e:	6b5a      	ldr	r2, [r3, #52]	@ 0x34
  8002570:	4b51      	ldr	r3, [pc, #324]	@ (80026b8 <USER_UART1_Init+0x150>)
  8002572:	2101      	movs	r1, #1
  8002574:	430a      	orrs	r2, r1
  8002576:	635a      	str	r2, [r3, #52]	@ 0x34
-	RCC->APBENR2  = RCC->APBENR2  |  ( 0x1UL << 14U );
+	RCC->APBENR2  = RCC->APBENR2 | (0x1UL << 14U);
  8002578:	4b4f      	ldr	r3, [pc, #316]	@ (80026b8 <USER_UART1_Init+0x150>)
  800257a:	6c1a      	ldr	r2, [r3, #64]	@ 0x40
  800257c:	4b4e      	ldr	r3, [pc, #312]	@ (80026b8 <USER_UART1_Init+0x150>)
@@ -5067,7 +5067,7 @@ void USER_UART1_Init(void){
  8002582:	430a      	orrs	r2, r1
  8002584:	641a      	str	r2, [r3, #64]	@ 0x40
 	/* STEP 0. Configure the TX pin (PA9) as Alternate Function Push-Pul*/
-	GPIOA->AFRH = GPIOA->AFRH & ~( 0xEUL <<  4U ); // Select the AF1 for the PA9
+	GPIOA->AFRH = GPIOA->AFRH & ~(0xEUL << 4U); // Select the AF1 for the PA9
  8002586:	23a0      	movs	r3, #160	@ 0xa0
  8002588:	05db      	lsls	r3, r3, #23
  800258a:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
@@ -5076,7 +5076,7 @@ void USER_UART1_Init(void){
  8002590:	21e0      	movs	r1, #224	@ 0xe0
  8002592:	438a      	bics	r2, r1
  8002594:	625a      	str	r2, [r3, #36]	@ 0x24
-	GPIOA->AFRH = GPIOA->AFRH |  ( 0x1UL <<  4U ); // Select the AF1 for the PA9
+	GPIOA->AFRH = GPIOA->AFRH | (0x1UL << 4U); // Select the AF1 for the PA9
  8002596:	23a0      	movs	r3, #160	@ 0xa0
  8002598:	05db      	lsls	r3, r3, #23
  800259a:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
@@ -5085,7 +5085,7 @@ void USER_UART1_Init(void){
  80025a0:	2110      	movs	r1, #16
  80025a2:	430a      	orrs	r2, r1
  80025a4:	625a      	str	r2, [r3, #36]	@ 0x24
-	GPIOA->PUPDR  = GPIOA->PUPDR  & ~( 0x3UL << 18U ); // Clear pull-up/pull-down bits for PA9
+	GPIOA->PUPDR  = GPIOA->PUPDR & ~(0x3UL << 18U); // Clear pull-up/pull-down bits for PA9
  80025a6:	23a0      	movs	r3, #160	@ 0xa0
  80025a8:	05db      	lsls	r3, r3, #23
  80025aa:	68da      	ldr	r2, [r3, #12]
@@ -5094,7 +5094,7 @@ void USER_UART1_Init(void){
  80025b0:	4942      	ldr	r1, [pc, #264]	@ (80026bc <USER_UART1_Init+0x154>)
  80025b2:	400a      	ands	r2, r1
  80025b4:	60da      	str	r2, [r3, #12]
-	GPIOA->OTYPER = GPIOA->OTYPER & ~( 0x1UL <<  9U ); // Clear output type bit for PA9
+	GPIOA->OTYPER = GPIOA->OTYPER & ~(0x1UL << 9U); // Clear output type bit for PA9
  80025b6:	23a0      	movs	r3, #160	@ 0xa0
  80025b8:	05db      	lsls	r3, r3, #23
  80025ba:	685a      	ldr	r2, [r3, #4]
@@ -5103,7 +5103,7 @@ void USER_UART1_Init(void){
  80025c0:	493f      	ldr	r1, [pc, #252]	@ (80026c0 <USER_UART1_Init+0x158>)
  80025c2:	400a      	ands	r2, r1
  80025c4:	605a      	str	r2, [r3, #4]
-	GPIOA->MODER  = GPIOA->MODER  & ~( 0x1UL << 18U ); // Set PA9 as AF
+	GPIOA->MODER  = GPIOA->MODER  & ~(0x1UL << 18U); // Set PA9 as AF
  80025c6:	23a0      	movs	r3, #160	@ 0xa0
  80025c8:	05db      	lsls	r3, r3, #23
  80025ca:	681a      	ldr	r2, [r3, #0]
@@ -5112,7 +5112,7 @@ void USER_UART1_Init(void){
  80025d0:	493c      	ldr	r1, [pc, #240]	@ (80026c4 <USER_UART1_Init+0x15c>)
  80025d2:	400a      	ands	r2, r1
  80025d4:	601a      	str	r2, [r3, #0]
-	GPIOA->MODER  = GPIOA->MODER  |  ( 0x2UL << 18U ); // Set PA9 as AF
+	GPIOA->MODER  = GPIOA->MODER  |  (0x2UL << 18U); // Set PA9 as AF
  80025d6:	23a0      	movs	r3, #160	@ 0xa0
  80025d8:	05db      	lsls	r3, r3, #23
  80025da:	681a      	ldr	r2, [r3, #0]
@@ -5123,7 +5123,7 @@ void USER_UART1_Init(void){
  80025e4:	430a      	orrs	r2, r1
  80025e6:	601a      	str	r2, [r3, #0]
 	/* RX pin (PA10)*/
-	GPIOA->AFRH = GPIOA->AFRH & ~( 0xEUL <<  8U );
+	GPIOA->AFRH = GPIOA->AFRH 		& ~(0xEUL << 8U);
  80025e8:	23a0      	movs	r3, #160	@ 0xa0
  80025ea:	05db      	lsls	r3, r3, #23
  80025ec:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
@@ -5132,7 +5132,7 @@ void USER_UART1_Init(void){
  80025f2:	4935      	ldr	r1, [pc, #212]	@ (80026c8 <USER_UART1_Init+0x160>)
  80025f4:	400a      	ands	r2, r1
  80025f6:	625a      	str	r2, [r3, #36]	@ 0x24
-	GPIOA->AFRH = GPIOA->AFRH |  ( 0x1UL <<  8U );
+	GPIOA->AFRH = GPIOA->AFRH 		| (0x1UL << 8U);
  80025f8:	23a0      	movs	r3, #160	@ 0xa0
  80025fa:	05db      	lsls	r3, r3, #23
  80025fc:	6a5a      	ldr	r2, [r3, #36]	@ 0x24
@@ -5194,6 +5194,7 @@ void USER_UART1_Init(void){
  800265e:	4920      	ldr	r1, [pc, #128]	@ (80026e0 <USER_UART1_Init+0x178>)
  8002660:	400a      	ands	r2, r1
  8002662:	601a      	str	r2, [r3, #0]
+
 	// Recibir
 	USART1->CR1 = USART1->CR1 | (0x1UL << 0U);  // UE (USART Enable)
  8002664:	4b1c      	ldr	r3, [pc, #112]	@ (80026d8 <USER_UART1_Init+0x170>)
