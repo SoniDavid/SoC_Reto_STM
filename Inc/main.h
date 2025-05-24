@@ -1,14 +1,5 @@
-/*
- * main.h
- *
- *  Created on: May 19, 2025
- *      Author: sonid
- */
-
 #ifndef MAIN_H_
 #define MAIN_H_
-
-#include <stdint.h>
 
 /* Embedded FLASH memory registers */
 typedef struct
@@ -30,7 +21,6 @@ typedef struct
 	volatile uint32_t RESERVED3[17];
 	volatile uint32_t SECR;
 } FLASH_TypeDef;
-
 
 /* Reset and Clock Control registers */
 typedef struct
@@ -71,12 +61,9 @@ typedef struct
 #define RCC_BASE	  0x40021000UL//		RCC base address
 #define FLASH_BASE	0x40022000UL//		FLASH base address
 #define GPIOA_BASE	0x50000000UL//		GPIO Port A base address
-#define GPIOB_BASE 	0x50000400UL//		GPIO Port B base address
 
 #define RCC     (( RCC_TypeDef *)RCC_BASE )
 #define FLASH	(( FLASH_TypeDef	*)FLASH_BASE )
 #define GPIOA		(( GPIO_TypeDef *)GPIOA_BASE )
-#define GPIOB		(( GPIO_TypeDef *)GPIOB_BASE )
-
 
 #endif /* MAIN_H_ */
