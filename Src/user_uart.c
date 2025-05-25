@@ -1,8 +1,8 @@
 /*
  * user_uart.c
  *
- *  Created on: May 19, 2025
- *      Author: sonid
+ *  Created on: May 20, 2025
+ *      Author: abrah
  */
 
 #include <stdint.h>
@@ -32,11 +32,8 @@ void USER_UART1_Init( void ){
  /* STEP 1. Program the M bits in USART_CR1 to define the word length (8 bits)*/
  USART1->CR1   = USART1->CR1   & ~( 0x1UL << 28U );
  USART1->CR1   = USART1->CR1   & ~( 0x1UL << 12U );
- // Recibir
- //USART1->CR1 = USART1->CR1 | (0x1UL << 0U);  // UE (USART Enable)
- //USART1->CR1 = USART1->CR1 | (0x1UL << 3U);  // TE (Transmitter Enable)
  /* STEP 2. Select the desired baud rate using the USART_BRR register */
- USART1->BRR   = 0x68;   // 12 Mhz / 115200 = 0d104.16 = 0x68
+ USART1->BRR   = (0x1388UL);   // 12 Mhz / 9600 = 0d104.16 = 0x68
  /* STEP 3. Program the number of STOP bits in USART_CR2 (1 stop bit) */
  USART1->CR2   = USART1->CR2   & ~( 0x3UL << 12U );
  /* STEP 4. Enable the USART by writting the UE bit in USART_CR1 register */
