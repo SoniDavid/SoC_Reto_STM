@@ -21,14 +21,14 @@ Implement Full-Duplex uart transmission with PA9 and PA10
 - PA9 (D8)	: TX uart 
 - PA10 (D2)	: RX uart
 - PA6 (D12)	: push button
-- PA12 		: LCD Data
-- PA13		: LCD Data
-- PA14		: LCD Data
-- PA15		: LCD Data 
+- PAX 		: LCD Data
+- PAX		: LCD Data
+- PAX		: LCD Data
+- PAX		: LCD Data 
 - PB4 (D5)	: PWM signal CH1
 - PB5 (D6)	: PWM signal CH2
 - PB6 (D1)	: PWM signal CH3
-- PB7 (D2)	: PWM signal CH4
+- PB7 (D0)	: PWM signal CH4
 - PB9 		: LCD
 - PB10 (D4) : LCD 
 - PB11 		: LCD 

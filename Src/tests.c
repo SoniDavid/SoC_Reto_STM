@@ -16,7 +16,7 @@
 #include "user_core_cm0plus.h"
 #include "user_adc.h"
 
-void Test_ADC_LED(void) {	// NOT TESTED
+void Test_ADC_LED(void) {	// TESTED, WORKING
     // Assumes USER_ADC_Init and USER_GPIO_Init have been called before
     for (;;) {
         uint16_t adc_value = USER_ADC_Read();
@@ -37,7 +37,7 @@ void Test_ADC_LED(void) {	// NOT TESTED
 //
 //}
 
-void Test_LCD(void) {	// NOT TESTED
+void Test_LCD(void) {	// TESTED, NOT WORKING WTH PWM
 	uint8_t col = 16;
 
 	USER_RCC_Init();	// Ensure system clock is configured
@@ -85,8 +85,11 @@ void Test_PB_LED(void){	// NOT TESTED
 
 }
 
-void Test_PWM_LED_BASIC(void){	//WORKS
-	USER_Set_PWM_Duty(60);
+void Test_PWM_LED_BASIC(void){	//TESTED, NOT WORKING WITH LCD
+  USER_Set_PWM_Duty(20);
+  delay_ms(1000);
+  USER_Set_PWM_Duty(80);
+  delay_ms(1000);
 }
 
 //void Test_PWM_LED(void){

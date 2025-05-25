@@ -34,18 +34,16 @@ int main(void)
   USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
   USER_TIM14_Init();			// Enable TIM14 for Delay
 	USER_UART1_Init();			// Enable Full-Duplex UART communication
-	LCD_Init();							// Initialize LCD
+//	LCD_Init();							// Initialize LCD
 	USER_ADC_Init();
 
 
   //Set initial values
-  USER_Set_PWM_Duty(50);	// this function doesn't work
 
   for(;;){
-  	  USER_Set_PWM_Duty(20);
-  	  delay_ms(1000);
-  	  USER_Set_PWM_Duty(80);
-  	  delay_ms(1000);
+//  	Test_ADC_LED();
+//  	Test_LCD();
+  	Test_PWM_LED_BASIC();
   }
 
 }
