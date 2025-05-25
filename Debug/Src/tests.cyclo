@@ -1,0 +1,4 @@
+../Src/tests.c:19:6:Test_ADC_LED	2
+../Src/tests.c:40:6:Test_LCD	2
+../Src/tests.c:68:6:Test_PB_LED	4
+../Src/tests.c:88:6:Test_PWM_LED_BASIC	1

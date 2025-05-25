@@ -12,7 +12,9 @@ C_SRCS += \
 ../Src/rcc_init.c \
 ../Src/syscalls.c \
 ../Src/sysmem.c \
+../Src/tests.c \
 ../Src/user_adc.c \
+../Src/user_core_cm0plus.c \
 ../Src/user_tim.c \
 ../Src/user_uart.c 
 
@@ -24,7 +26,9 @@ OBJS += \
 ./Src/rcc_init.o \
 ./Src/syscalls.o \
 ./Src/sysmem.o \
+./Src/tests.o \
 ./Src/user_adc.o \
+./Src/user_core_cm0plus.o \
 ./Src/user_tim.o \
 ./Src/user_uart.o 
 
@@ -36,7 +40,9 @@ C_DEPS += \
 ./Src/rcc_init.d \
 ./Src/syscalls.d \
 ./Src/sysmem.d \
+./Src/tests.d \
 ./Src/user_adc.d \
+./Src/user_core_cm0plus.d \
 ./Src/user_tim.d \
 ./Src/user_uart.d 
 
@@ -48,7 +54,7 @@ Src/%.o Src/%.su Src/%.cyclo: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/delays.cyclo ./Src/delays.d ./Src/delays.o ./Src/delays.su ./Src/gpio_init.cyclo ./Src/gpio_init.d ./Src/gpio_init.o ./Src/gpio_init.su ./Src/lcd.cyclo ./Src/lcd.d ./Src/lcd.o ./Src/lcd.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/rcc_init.cyclo ./Src/rcc_init.d ./Src/rcc_init.o ./Src/rcc_init.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/user_adc.cyclo ./Src/user_adc.d ./Src/user_adc.o ./Src/user_adc.su ./Src/user_tim.cyclo ./Src/user_tim.d ./Src/user_tim.o ./Src/user_tim.su ./Src/user_uart.cyclo ./Src/user_uart.d ./Src/user_uart.o ./Src/user_uart.su
+	-$(RM) ./Src/delays.cyclo ./Src/delays.d ./Src/delays.o ./Src/delays.su ./Src/gpio_init.cyclo ./Src/gpio_init.d ./Src/gpio_init.o ./Src/gpio_init.su ./Src/lcd.cyclo ./Src/lcd.d ./Src/lcd.o ./Src/lcd.su ./Src/main.cyclo ./Src/main.d ./Src/main.o ./Src/main.su ./Src/rcc_init.cyclo ./Src/rcc_init.d ./Src/rcc_init.o ./Src/rcc_init.su ./Src/syscalls.cyclo ./Src/syscalls.d ./Src/syscalls.o ./Src/syscalls.su ./Src/sysmem.cyclo ./Src/sysmem.d ./Src/sysmem.o ./Src/sysmem.su ./Src/tests.cyclo ./Src/tests.d ./Src/tests.o ./Src/tests.su ./Src/user_adc.cyclo ./Src/user_adc.d ./Src/user_adc.o ./Src/user_adc.su ./Src/user_core_cm0plus.cyclo ./Src/user_core_cm0plus.d ./Src/user_core_cm0plus.o ./Src/user_core_cm0plus.su ./Src/user_tim.cyclo ./Src/user_tim.d ./Src/user_tim.o ./Src/user_tim.su ./Src/user_uart.cyclo ./Src/user_uart.d ./Src/user_uart.o ./Src/user_uart.su
 
 .PHONY: clean-Src
 

@@ -63,7 +63,7 @@ void USER_TIM3_PWM_Init( void ){
 	/* STEP 3. Configure the prescaler, the period and the duty cycle register values */
 	TIM3->PSC = 0U;
 	TIM3->ARR = 47999U;//	for 1 KHz frequency
-	uint16_t duty = USER_Duty_Cycle(80); // 0-100 range values
+	uint16_t duty = USER_Duty_Cycle(0); // 0-100 range values
 	TIM3->CCR1 = duty;
 	TIM3->CCR2 = duty;
 	TIM3->CCR3 = duty;
@@ -161,10 +161,13 @@ void USER_Set_PWM_Duty(uint8_t duty_percent) {
 	TIM3->CCR2 = duty;
 	TIM3->CCR3 = duty;
 	TIM3->CCR4 = duty;
+
+	TIM3->EGR |= (1U << 0); // Force update event to load new CCR values
+	TIM3->CR1 &= ~(0x1UL << 1U);
 }
 
 void USER_Change_PWM_Duty(int8_t delta_percent) {
-	// Get current duty cycle from CCR1 and convert it to percent
+	// Get current duty cycle from CCR1 and convert it to pe	rcent
 	uint16_t current_duty_ticks = TIM3->CCR1;
 	uint16_t arr_value = TIM3->ARR + 1; // ARR is zero-based
 	float current_percent = ((float)current_duty_ticks / arr_value) * 100.0f;
@@ -181,6 +184,7 @@ void USER_Change_PWM_Duty(int8_t delta_percent) {
 	TIM3->CCR3 = new_duty;
 	TIM3->CCR4 = new_duty;
 }
+
 
 
 

@@ -10,6 +10,5 @@
 
 void USER_GPIO_Init(void);
 void USER_Delay(void);
-void PA6_ButtonCheck(void);
 
 #endif /* GPIO_INIT_H_ */
