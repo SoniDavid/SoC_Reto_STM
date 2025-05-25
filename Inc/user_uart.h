@@ -1,22 +1,14 @@
 /*
  * user_uart.h
  *
- *  Created on: May 23, 2025
- *      Author: sonid
+ *  Created on: Apr 4, 2025
+ *      Author: abrah
  */
 
 #ifndef USER_UART_H_
 #define USER_UART_H_
 
-#include <stdio.h>
-int _write(int file, char *ptr, int len);
-
-void USER_UART1_Init(void);
-void USER_UART1_Transmit(uint8_t *pData, uint16_t size);
-uint8_t USER_UART1_Receive_8bit(void);
-void USER_USART1_Send_8bit(uint8_t);
-
-
+#include <stdint.h>
 /* USART registers */
 typedef struct
 {
@@ -34,7 +26,15 @@ typedef struct
 	volatile uint32_t PRESC;
 } USART_TypeDef;
 
-#define USART1_BASE	0x40013800//		USART 1 base address
-#define USART1	(( USART_TypeDef *)USART1_BASE )
+#define NVIC_ISER0 (*((volatile uint32_t*)0xE000E100))
 
-#endif /* USER_UART_H_ */
+#define USART1_BASE	0x40013800//		USART1 base address
+#define USART1	(( USART_TypeDef 	*)USART1_BASE )
+
+void USER_USART1_Init( void );
+void USER_USART1_Transmit( uint8_t *pData, uint16_t size );
+void USER_USART1_Send_8bit(uint8_t Data);
+uint8_t USER_USART1_Receive_8bit(void);
+void USART1_IRQHandler(void);
+
+#endif /* UART_H_ */

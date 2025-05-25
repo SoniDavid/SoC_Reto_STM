@@ -92,6 +92,23 @@ void Test_PWM_LED_BASIC(void){	//TESTED, NOT WORKING WITH LCD
   delay_ms(1000);
 }
 
+void Control_PWM_With_ADC(void) {
+    // Assumes USER_ADC_Init, USER_GPIO_Init, and USER_TIM3_PWM_Init have been called before
+    while (1) {
+        uint16_t adc_value = USER_ADC_Read();  // Read ADC (0 to 4095)
+
+        // Map ADC value to duty cycle (0% to 100%)
+        uint8_t duty = (adc_value * 100) / 4095;
+
+        // Set PWM duty cycle
+        USER_Set_PWM_Duty(duty);
+
+        // Optional: short delay to reduce update rate
+        SysTick_Delay(100);
+    }
+}
+
+
 //void Test_PWM_LED(void){
 //
 //}

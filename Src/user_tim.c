@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 #include "user_tim.h"
+#include "main.h"
+#include "user_uart.h"
+
 
 void USER_TIM3_PWM_Init( void ){
 	/* STEP 0 Enable the clock signal for the TIM3 and GPIOB peripherals */
@@ -110,38 +113,68 @@ void USER_TIM3_PWM_Init( void ){
 	TIM3->CR1	|=  ( 0x1UL <<  0U );
 }
 
-void USER_TIM14_Init(void){
-
-	/*Enable clock signal for timer 14*/
-	RCC->APBENR2 |= (1U << 15); // Enable TIM14 clock
-
-	/*Enable internal clock source is not needed*/
-
-	// Configure auto-reload preload, counter mode, and overflow
-	TIM14->CR1 |= (1UL << 7U);    // ARPE = 1 (Enable preload)
-	TIM14->CR1 |= (1UL << 3U);   // OPM = 1 (Continuous mode)
-	TIM14->CR1 &= ~(1UL << 2U);   // URS = 0 (Allow any source to generate UEV)
-	TIM14->CR1 &= ~(1UL << 1U);   // UDIS = 0 (Enable UEV)
+void USER_TIM14_Init(void) {
+	RCC->APBENR2	|=  (0x1UL <<  15U);//		Enable TIM14 clock source
+	TIM14->SMCR		&= ~( 0x1UL << 16U)
+								&  ~( 0x7UL << 0U);// 	Prescaler is clocked directed by the internal clock
+	TIM14->CR1		&= ~( 0x1UL << 7U) //		Auto-reload register is not buffered
+								&  ~( 0x3UL << 5U) //		Selects edge-aligned mode
+								&  ~( 0x1UL << 4U) //		Counter used as upcounter
+								&  ~( 0x1UL << 1U);//		Update Event (UEV) enabled
 }
 
-void USER_TIM14_Delay(uint16_t prescaler, uint16_t AutoReload){
+void USER_TIM16_Init(void) {
+    // 1. Habilitar el reloj de TIM16 (APBENR2 bit 17)
+    RCC->APBENR2 |= (0x1UL << 17U);
 
-	// Configure Prescaler
-	TIM14->PSC = prescaler;
+    // 2. Configuración básica del timer
+    TIM16->SMCR &= ~(0x1UL << 16U); // Clock source = internal
+    TIM16->SMCR &= ~(0x7UL << 0U);  // Slave mode = disabled
 
-	// Configure Auto Reload
-	TIM14->ARR = AutoReload;
+    TIM16->CR1 &= ~(0x1UL << 7U);   // Auto-reload not buffered
+    TIM16->CR1 &= ~(0x3UL << 5U);   // Edge-aligned mode
+    TIM16->CR1 &= ~(0x1UL << 4U);   // Upcounter
+    TIM16->CR1 &= ~(0x1UL << 1U);   // UEV enabled
 
-	//Clear TImer Update Interrupt Flag
-	TIM14->SR &= ~(1UL << 0U);
+    // 3. Configurar prescaler y periodo para el intervalo deseado
+    // Ejemplo: 10ms a 48MHz -> (PSC=4799, ARR=99)
+    TIM16->PSC = 4799;    // (48,000,000 / (4799+1)) = 10,000 Hz
+    TIM16->ARR = 99;      // 100 ticks = 10 ms
 
-	//Enable Counter
-	TIM14->CR1 |= (1UL << 0U);
+    // 4. Limpiar la bandera UIF antes de habilitar interrupción
+	TIM16->SR &= ~(1UL << 0);
 
-  // Wait until update event (UIF = 1)
-  while (!(TIM14->SR & (1UL << 0U)));
-  // Clear update flag again if needed
-  TIM14->SR &= ~(1UL << 0U);
+	// 5. Habilitar la interrupción de "update" (UIE)
+	TIM16->DIER |= (1UL << 0);
+
+	NVIC_ISER0 = (1UL << 21); // Habilita TIM16_IRQn
+
+	// 7. Arrancar el timer
+	TIM16->CR1 |= (1UL << 0); // CEN = 1 (enable)
+}
+
+void USER_TIM14_Delay(uint16_t prescaler, uint16_t maxCount) {
+	TIM14->CR1 &= ~(1UL << 0);
+	/* STEP 3. Configure the prescaler and the maximum count */
+
+	TIM14->PSC = prescaler;   // Divide el reloj de entrada
+	TIM14->ARR = maxCount;    // Valor hasta donde cuenta
+
+	TIM14->EGR |= (1UL << 0);
+	/* STEP 4. Clear the Timer Update Interrupt Flag */
+
+	TIM14->SR &= ~(1UL << 0); // UIF = 0 (bit 0 del SR)
+
+	/* STEP 5. Enable the Timer to start counting */
+
+	TIM14->CR1 |= (1UL << 0); // CEN = 1 (bit 0 del CR1)
+
+	/* STEP 6. Wait for the Overflow */
+	while (!(TIM14->SR & (1UL << 0)));
+
+	/* STEP 7. Disable the Timer to stop counting */
+	TIM14->CR1 &= ~(1UL << 0); // CEN = 0
+	TIM14->SR &= ~(1UL << 0);
 }
 
 

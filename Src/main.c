@@ -10,7 +10,10 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+//INCLUDE FILES
 #include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include "main.h"
 #include "user_tim.h"
 #include "rcc_init.h"
@@ -22,7 +25,19 @@
 #include "user_adc.h"
 #include "tests.h"
 
-void Break_PWM( void );		// Use push button to break PWM
+//DEFINITIONS
+#define RX_BUFFER_SIZE 64
+
+//GLOBAL VARIABLES
+volatile float rpm = 0.0f, vl = 0.0f;
+volatile float gear = 0.0f;
+volatile uint8_t paqueteListo = 0;
+
+volatile uint32_t tim16_tick = 0;
+char rx_buffer[RX_BUFFER_SIZE];
+uint8_t rx_index = 0;
+
+
 
 /* Superloop structure */
 int main(void)
@@ -33,7 +48,7 @@ int main(void)
   USER_GPIO_Init();				// Initialize push button (break)
   USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
   USER_TIM14_Init();			// Enable TIM14 for Delay
-	USER_UART1_Init();			// Enable Full-Duplex UART communication
+  USER_USART1_Init();			// Enable Full-Duplex UART communication
 //	LCD_Init();							// Initialize LCD
 	USER_ADC_Init();
 
@@ -43,23 +58,84 @@ int main(void)
   for(;;){
 //  	Test_ADC_LED();
 //  	Test_LCD();
-  	Test_PWM_LED_BASIC();
+//  	Test_PWM_LED_BASIC();
+  	Control_PWM_With_ADC();
   }
 
 }
 
-void Break_PWM(void) {
-  if (!(GPIOA->IDR & (1UL << 6))) {  // Button press detected (logic low)
-    USER_Delay();
-      if (!(GPIOA->IDR & (1UL << 6))) {  // Double-check press
-     //      	void USER_Set_PWM_Duty();
-		// Wait for button release
-		while (!(GPIOA->IDR & (1UL << 6)));
-            USER_Delay();
+//void Break_PWM(void) {
+//  if (!(GPIOA->IDR & (1UL << 6))) {  // Button press detected (logic low)
+//    USER_Delay();
+//      if (!(GPIOA->IDR & (1UL << 6))) {  // Double-check press
+//     //      	void USER_Set_PWM_Duty();
+//		// Wait for button release
+//		while (!(GPIOA->IDR & (1UL << 6)));
+//            USER_Delay();
+//        }
+//    }
+//}
+
+
+
+void USART1_IRQHandler(void) {
+    if (USART1->ISR & (1UL << 5U)) { // RXNE
+        uint8_t received = (uint8_t)(USART1->RDR & 0xFF);
+
+        if(received == 'I') {
+            rx_index = 0;
+            memset(rx_buffer, 0, RX_BUFFER_SIZE);
+            rx_buffer[rx_index++] = received;
+            return;
+        }
+
+        if (rx_buffer[0] == 'I') {
+            if(received == 'E') {
+                rx_buffer[rx_index] = '\0';
+
+                int rpm_i1, rpm_i2, vl_i1, vl_i2, gear_i;
+                if (sscanf(&rx_buffer[1], "%d,%d,%d,%d,%d,", &rpm_i1, &rpm_i2, &vl_i1, &vl_i2, &gear_i) == 5) {
+                    rpm = rpm_i1 + (rpm_i2 / 100.0f);
+                    vl = vl_i1 + (vl_i2 / 100.0f);
+                    gear = (float)gear_i;
+                    paqueteListo = 1;
+                }
+            } else if (rx_index < RX_BUFFER_SIZE - 1) {
+                rx_buffer[rx_index++] = received;
+            } else {
+                rx_index = 0;
+                memset(rx_buffer, 0, RX_BUFFER_SIZE);
+            }
         }
     }
 }
 
+void transmit_data(){
+	uint8_t tx_buffer[64];
+	int rpm_i = (int)(rpm * 100);
+	int vl_i = (int)(vl * 100);
+	int gear_i = (int)(gear);
+	sprintf((char*)tx_buffer,
+		             "I%d.%02d,%d.%02d,%d,E\n",
+		             rpm_i / 100, rpm_i % 100,
+		             vl_i / 100,  vl_i % 100,
+		             gear_i);
+	USER_USART1_Transmit(tx_buffer, strlen((char*)tx_buffer));
+}
 
+void TIM16_IRQHandler(void) {
+    if (TIM16->SR & (1UL << 0)) {
+        TIM16->SR &= ~(1UL << 0);
+        tim16_tick++;
+    }
+}
+
+uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks) {
+    if ((tim16_tick - *start) >= n_ticks) {
+        *start = tim16_tick;
+        return 1;
+    }
+    return 0;
+}
 
 

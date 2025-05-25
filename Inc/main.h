@@ -78,5 +78,14 @@ typedef struct
 #define GPIOA		(( GPIO_TypeDef *)GPIOA_BASE )
 #define GPIOB		(( GPIO_TypeDef *)GPIOB_BASE )
 
+/*FUNCTIONS*/
+// Test
+
+// For UART communication
+void transmit_data(void);
+uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks);
+void USART1_IRQHandler(void);
+void TIM16_IRQHandler(void);
+
 
 #endif /* MAIN_H_ */
