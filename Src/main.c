@@ -51,16 +51,27 @@ int main(void)
   USER_USART1_Init();			// Enable Full-Duplex UART communication
 //	LCD_Init();							// Initialize LCD
 	USER_ADC_Init();
+	USER_TIM16_Init();
 
-
-  //Set initial values
+	//Local variables
+	uint32_t start_tx = 0;
+	uint32_t start_led = 0;
 
   for(;;){
-//  	Test_ADC_LED();
-//  	Test_LCD();
-//  	Test_PWM_LED_BASIC();
-  	Control_PWM_With_ADC();
-  }
+		if (paqueteListo) {
+			paqueteListo = 0;
+			// Aquí puedes procesar los datos almacenados en rpm, vl y gear
+      Update_PWM_From_Velocity(vl);
+		}
+
+		if (delay_elapsed(&start_tx, 100)) {
+			transmit_data();
+		}
+
+		if (delay_elapsed(&start_led, 100)) {
+			GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
+		}
+	}
 
 }
 

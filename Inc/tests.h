@@ -15,5 +15,6 @@ void Test_PB_LED(void); 		// test Push button with a LED
 void Test_PWM_LED_BASIC(void); //test PWM with leds (basic)
 //void Test_PWM_LED(void); 		// test PWM changing over time
 void Control_PWM_With_ADC(void);
+void Update_PWM_From_Velocity(float);
 
 #endif /* TESTS_H_ */

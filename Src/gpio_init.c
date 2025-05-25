@@ -14,6 +14,8 @@ void USER_GPIO_Init( void ){
   // Configure PA6 as input w pull up
   GPIOA->PUPDR = GPIOA->PUPDR & ~(0x2UL << 12U);
   GPIOA->PUPDR = GPIOA->PUPDR | (0x1UL << 12U);
+  GPIOA->MODER = GPIOA->MODER & ~(0x3UL << 12U);
+
 
   // Configure PA5 as output push pull (It comes in the LCD, so JIC)
    GPIOA->BSRR   = 0x1UL << 21U; // Reset PA5 low to turn off LED

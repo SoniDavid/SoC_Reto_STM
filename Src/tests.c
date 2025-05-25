@@ -72,12 +72,14 @@ void Test_PB_LED(void){	// NOT TESTED
     /* Repetitive block */
     for(;;){
       if (!(GPIOA->IDR & (0x1UL << 6U))){
-      	SysTick_Delay(500);
+//      	SysTick_Delay(500);
+        delay_ms(20);
       	// add tim 14 timer for testing
         if (!(GPIOA->IDR & (0x1UL << 6U))){
           GPIOA->ODR = GPIOA->ODR ^ (0x1UL << 5U);
           while(!(GPIOA->IDR & (0x1UL << 6U))){}
-          SysTick_Delay(500);
+//          SysTick_Delay(500);
+          delay_ms(20);
           // add tim 14 timer for testing
         }
       }
@@ -106,6 +108,17 @@ void Control_PWM_With_ADC(void) {
         // Optional: short delay to reduce update rate
         SysTick_Delay(100);
     }
+}
+
+void Update_PWM_From_Velocity(float input_vl) {
+    // Clamp the input to [0.0, 200.0] for safety
+    if (input_vl < 0.0f) input_vl = 0.0f;
+    if (input_vl > 200.0f) input_vl = 200.0f;
+
+    // Map velocity to 0–100% PWM duty
+    uint8_t duty = (uint8_t)((input_vl / 200.0f) * 100.0f);
+
+    USER_Set_PWM_Duty(duty);
 }
 
 
