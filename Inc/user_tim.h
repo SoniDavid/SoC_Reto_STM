@@ -1,7 +1,6 @@
-#ifndef USER_TIM_H_
-#define USER_TIM_H_
+#ifndef INC_TIM_H_
+#define INC_TIM_H_
 
-/* General Purpose Timers registers */
 typedef struct
 {
 	volatile uint32_t CR1;
@@ -31,9 +30,18 @@ typedef struct
 } TIM_TypeDef;
 
 #define TIM3_BASE	0x40000400UL//	TIM3 base address
+#define TIM14_BASE	0x40002000UL//	TIM14 base address
+#define TIM16_BASE	0x40014400UL// 	TIM16 base address
+
 #define TIM3    	(( TIM_TypeDef * )TIM3_BASE )
+#define TIM14    	(( TIM_TypeDef * )TIM14_BASE )
+#define TIM16    	(( TIM_TypeDef * )TIM16_BASE )
 
+void USER_TIM14_Init( void );
+void USER_TIM14_Delay( uint16_t prescaler, uint16_t maxCount );
 void USER_TIM3_Init( void );
-void USER_TIM3_Delay( uint16_t prescaler, uint16_t maxCount );
+uint16_t USER_Duty_Cycle( uint8_t duty );
+void USER_TIM16_Init (void);
 
-#endif /* USER_TIM_H_ */
+#endif /* INC_TIM_H_ */
+
