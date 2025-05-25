@@ -31,6 +31,8 @@
 //GLOBAL VARIABLES
 volatile float rpm = 0.0f, vl = 0.0f;
 volatile float gear = 0.0f;
+volatile uint16_t acceleration = 0;
+volatile uint8_t button_state = 0;
 volatile uint8_t paqueteListo = 0;
 
 volatile uint32_t tim16_tick = 0;
@@ -60,33 +62,24 @@ int main(void)
   for(;;){
 		if (paqueteListo) {
 			paqueteListo = 0;
+			Update_PWM_From_Velocity(vl);
 			// Aquí puedes procesar los datos almacenados en rpm, vl y gear
       Update_PWM_From_Velocity(vl);
 		}
 
 		if (delay_elapsed(&start_tx, 100)) {
+			Update_Inputs();
 			transmit_data();
 		}
 
 		if (delay_elapsed(&start_led, 100)) {
 			GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
 		}
+
+
 	}
 
 }
-
-//void Break_PWM(void) {
-//  if (!(GPIOA->IDR & (1UL << 6))) {  // Button press detected (logic low)
-//    USER_Delay();
-//      if (!(GPIOA->IDR & (1UL << 6))) {  // Double-check press
-//     //      	void USER_Set_PWM_Duty();
-//		// Wait for button release
-//		while (!(GPIOA->IDR & (1UL << 6)));
-//            USER_Delay();
-//        }
-//    }
-//}
-
 
 
 void USART1_IRQHandler(void) {
@@ -121,18 +114,42 @@ void USART1_IRQHandler(void) {
     }
 }
 
-void transmit_data(){
-	uint8_t tx_buffer[64];
-	int rpm_i = (int)(rpm * 100);
-	int vl_i = (int)(vl * 100);
-	int gear_i = (int)(gear);
-	sprintf((char*)tx_buffer,
-		             "I%d.%02d,%d.%02d,%d,E\n",
-		             rpm_i / 100, rpm_i % 100,
-		             vl_i / 100,  vl_i % 100,
-		             gear_i);
-	USER_USART1_Transmit(tx_buffer, strlen((char*)tx_buffer));
+//void transmit_data(){
+//	uint8_t tx_buffer[64];
+//	int rpm_i = (int)(rpm * 100);
+//	int vl_i = (int)(vl * 100);
+//	int gear_i = (int)(gear);
+//	sprintf((char*)tx_buffer,
+//		             "I%d.%02d,%d.%02d,%d,E\n",
+//		             rpm_i / 100, rpm_i % 100,
+//		             vl_i / 100,  vl_i % 100,
+//		             gear_i);
+//	USER_USART1_Transmit(tx_buffer, strlen((char*)tx_buffer));
+//}
+
+void transmit_data() {
+    uint8_t tx_buffer[64];
+
+    int rpm_i = (int)(rpm * 100);
+    int vl_i = (int)(vl * 100);
+    int gear_i = (int)(gear);
+    int acc_i1 = acceleration / 100;
+    int acc_i2 = acceleration % 100;
+    int btn_i = (int)(button_state);
+
+    // Format everything as comma-separated values
+    sprintf((char*)tx_buffer,
+            "I%d.%02d,%d.%02d,%d,%d.%02d,%d,E\n",
+            rpm_i / 100, rpm_i % 100,
+            vl_i / 100,  vl_i % 100,
+            gear_i,
+            acc_i1,
+            acc_i2,
+            btn_i);
+
+    USER_USART1_Transmit(tx_buffer, strlen((char*)tx_buffer));
 }
+
 
 void TIM16_IRQHandler(void) {
     if (TIM16->SR & (1UL << 0)) {
@@ -148,5 +165,14 @@ uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks) {
     }
     return 0;
 }
+
+void Update_Inputs(void) {
+    // Read ADC and update global acceleration
+    acceleration = USER_ADC_Read();
+
+    // Read push button (PA6), 0 if pressed, 1 if not pressed
+    button_state = (GPIOA->IDR & (1UL << 6U)) ? 0 : 1;
+}
+
 
 

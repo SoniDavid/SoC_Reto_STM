@@ -86,6 +86,7 @@ void transmit_data(void);
 uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks);
 void USART1_IRQHandler(void);
 void TIM16_IRQHandler(void);
+void Update_Inputs(void);
 
 
 #endif /* MAIN_H_ */
