@@ -1,15 +1,12 @@
 /*
- * lcd.h
- *
- *  Created on: May 23, 2025
- *      Author: sonid
- */
-
+* lcd.h
+*
+*  Created on: May 19, 2025
+*      Author: alexa
+*/
 #ifndef LCD_H_
 #define LCD_H_
-
 #include "delays.h"
-
 //Lista de definicion de pines
 #define LCD_RS_PIN_HIGH       ( 0x1UL <<  9U )//	Set pin RS_LCD (PB9)
 #define LCD_RW_PIN_HIGH       ( 0x1UL << 10U )//	Set pin RW_LCD (PB10)
@@ -17,14 +14,14 @@
 #define LCD_RS_PIN_LOW        ( 0x1UL << 25U )//	Reset pin RS_LCD (PB9)
 #define LCD_RW_PIN_LOW 	      ( 0x1UL << 26U )//	Reset pin RW_LCD (PB10)
 #define LCD_EN_PIN_LOW 	      ( 0x1UL << 27U )//	Reset pin EN_LCD (PB11)
-#define LCD_D4_PIN_HIGH       ( 0x1UL << 12U )//	Set pin DATA4_LCD (PB12)
-#define LCD_D5_PIN_HIGH       ( 0x1UL << 13U )//	Set pin DATA5_LCD (PB13)
-#define LCD_D6_PIN_HIGH       ( 0x1UL << 14U )//	Set pin DATA6_LCD (PB14)
-#define LCD_D7_PIN_HIGH       ( 0x1UL << 15U )//	Set pin DATA7_LCD (PB15)
-#define LCD_D4_PIN_LOW        ( 0x1UL << 28U )//	Reset pin DATA4_LCD (PB12)
-#define LCD_D5_PIN_LOW 	      ( 0x1UL << 29U )//	Reset pin DATA5_LCD (PB13)
-#define LCD_D6_PIN_LOW 	      ( 0x1UL << 30U )//	Reset pin DATA6_LCD (PB14)
-#define LCD_D7_PIN_LOW 	      ( 0x1UL << 31U )//	Reset pin DATA7_LCD (PB15)
+#define LCD_D4_PIN_HIGH       ( 0x1UL << 0U )//	Set pin DATA4_LCD (PB12)
+#define LCD_D5_PIN_HIGH       ( 0x1UL << 1U )//	Set pin DATA5_LCD (PB13)
+#define LCD_D6_PIN_HIGH       ( 0x1UL << 2U )//	Set pin DATA6_LCD (PB14)
+#define LCD_D7_PIN_HIGH       ( 0x1UL << 3U )//	Set pin DATA7_LCD (PB15)
+#define LCD_D4_PIN_LOW        ( 0x1UL << 16U )//	Reset pin DATA4_LCD (PB12)
+#define LCD_D5_PIN_LOW 	      ( 0x1UL << 17U )//	Reset pin DATA5_LCD (PB13)
+#define LCD_D6_PIN_LOW 	      ( 0x1UL << 18U )//	Reset pin DATA6_LCD (PB14)
+#define LCD_D7_PIN_LOW 	      ( 0x1UL << 19U )//	Reset pin DATA7_LCD (PB15)
 //Definimos los nombres de los comandos para el LCD
 #define LCD_Clear( )			LCD_Write_Cmd( 0x01U )//	Borra la pantalla
 #define LCD_Display_ON( )		LCD_Write_Cmd( 0x0EU )//	Pantalla LCD activa
@@ -50,9 +47,6 @@ char LCD_Busy(void);
 void LCD_Pulse_EN(void);
 void LCD_BarGraphic(int16_t value, int16_t size);
 void LCD_BarGraphicXY(int16_t pos_x, int16_t pos_y, int16_t value);
-
-void delay_us(uint32_t us);  // Declaración explícita
-void delay_ms(uint32_t ms);  // Declaración explícita
-
-
-#endif /* LCD_H_ */
+void delay_ms(uint32_t ms);
+void delay_us(uint32_t us);
+#endif /* INC_LCD_H_ */

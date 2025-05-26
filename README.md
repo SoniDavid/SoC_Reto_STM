@@ -18,13 +18,13 @@ Implement Full-Duplex uart transmission with PA9 and PA10
 ## GPIOs
 - PA0 		: ADC Potentiometer
 - PA5 		: Normal LED
+- PA6 (D12)	: push button
 - PA9 (D8)	: TX uart 
 - PA10 (D2)	: RX uart
-- PA6 (D12)	: push button
-- PAX 		: LCD Data
-- PAX		: LCD Data
-- PAX		: LCD Data
-- PAX		: LCD Data 
+- PB0 		: LCD Data
+- PB1		: LCD Data
+- PB2		: LCD Data
+- PB3		: LCD Data 
 - PB4 (D5)	: PWM signal CH1
 - PB5 (D6)	: PWM signal CH2
 - PB6 (D1)	: PWM signal CH3

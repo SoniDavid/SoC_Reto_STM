@@ -47,11 +47,11 @@ int main(void)
 	/* Initialization of Peripherals */
 	USER_RCC_Init(); 				// Set CLK to 48MHz
 	USER_SysTick_Init();		//
-  USER_GPIO_Init();				// Initialize push button (break)
-  USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
-  USER_TIM14_Init();			// Enable TIM14 for Delay
-  USER_USART1_Init();			// Enable Full-Duplex UART communication
-//	LCD_Init();							// Initialize LCD
+	USER_GPIO_Init();				// Initialize push button (break)
+	USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
+	USER_TIM14_Init();			// Enable TIM14 for Delay
+	USER_USART1_Init();			// Enable Full-Duplex UART communication
+	LCD_Init();					// Initialize LCD
 	USER_ADC_Init();
 	USER_TIM16_Init();
 
@@ -69,11 +69,25 @@ int main(void)
 
 		if (delay_elapsed(&start_tx, 100)) {
 			Update_Inputs();
+			LCD_Clear();
+			LCD_Set_Cursor(1,1);
+			LCD_Put_Str("Rpm: ");
+			LCD_Put_Num(rpm);
+
+			LCD_Set_Cursor(2,1);
+			LCD_Put_Str("Gr:");
+			LCD_Put_Num(gear);
+
+			LCD_Set_Cursor(2,8);
+			LCD_Put_Str("Sp: ");
+			LCD_Put_Num(vl);
 			transmit_data();
 		}
 
 		if (delay_elapsed(&start_led, 100)) {
 			GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
+
+
 		}
 
 
