@@ -1,6 +1,0 @@
-../Src/main.c:45:5:main	16	static
-../Src/main.c:99:6:USART1_IRQHandler	56	static
-../Src/main.c:144:6:transmit_data	136	static
-../Src/main.c:168:6:TIM16_IRQHandler	8	static
-../Src/main.c:175:9:delay_elapsed	16	static
-../Src/main.c:183:6:Update_Inputs	8	static
