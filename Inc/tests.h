@@ -16,4 +16,8 @@ void Test_PWM_LED_BASIC(void); //test PWM with leds (basic)
 //void Test_PWM_LED(void); 		// test PWM changing over time
 void Control_PWM_With_ADC(void);
 
+void LCD_Show_TxTime(void);
+void LCD_Show_OutputTime(void);
+void LCD_Show_InputTime(void);
+
 #endif /* TESTS_H_ */

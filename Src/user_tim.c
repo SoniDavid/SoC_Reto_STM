@@ -177,6 +177,15 @@ void USER_TIM14_Delay(uint16_t prescaler, uint16_t maxCount) {
 	TIM14->SR &= ~(1UL << 0);
 }
 
+void USER_TIM17_Init_Timer(void) {
+  RCC->APBENR2 |= (1UL << 18U); // Enable TIM17 clock
+  TIM17->CR1 &= ~(1UL << 7U) & ~(1UL << 1U); // No buffering, UEV enabled
+  TIM17->PSC = 1499U; // Prescaler: 48MHz / (1499 + 1) = 32kHz → 31.25 µs per tick
+  TIM17->ARR = 65535U;   // Max count
+  TIM17->SR &= ~(1UL << 0U); // Clear update flag
+  TIM17->CR1 |= (1UL << 0U); // Start timer
+}
+
 
 // function used internally for initialization
 uint16_t USER_Duty_Cycle( uint8_t duty ){

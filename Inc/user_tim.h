@@ -48,6 +48,10 @@ typedef struct
 #define TIM16_BASE	0x40014400UL// 	TIM16 base address
 #define TIM16    	(( TIM_TypeDef * )TIM16_BASE )
 
+#define TIM17_BASE 0x40014800UL //TIM17 base address
+#define TIM17      ((TIM_TypeDef *) TIM17_BASE)
+
+
 // TIM3 functions
 void USER_TIM3_PWM_Init(void);
 uint16_t USER_Duty_Cycle(uint8_t duty);
@@ -60,5 +64,7 @@ void USER_TIM14_Delay(uint16_t prescaler, uint16_t AutoReload);
 // TIM16 functions
 void USER_TIM16_Init(void);
 
+// TIM17
+void USER_TIM17_Init_Timer(void);
 
 #endif /* USER_TIM_H_ */

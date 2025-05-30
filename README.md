@@ -46,5 +46,12 @@ System works with all sensors. The UART full duplex sends and recieves via chars
 | PB14 		| LCD					|
 | PB15 		| LCD					|
 
+## freeRTOS Tasks
+|Task			| Description			|
+|---------------|-----------------------|
+|UpdateInputs	| ADC and PB update		|
+|UpdateOutputs	| PWM and LCD update	|
+|transmitData	| Transmit inputs		|	
+
 
 		

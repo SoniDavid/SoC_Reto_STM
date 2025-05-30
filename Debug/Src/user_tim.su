@@ -2,6 +2,7 @@
 ../Src/user_tim.c:116:6:USER_TIM14_Init	8	static
 ../Src/user_tim.c:126:6:USER_TIM16_Init	8	static
 ../Src/user_tim.c:156:6:USER_TIM14_Delay	16	static
-../Src/user_tim.c:182:10:USER_Duty_Cycle	24	static
-../Src/user_tim.c:191:6:USER_Set_PWM_Duty	32	static
-../Src/user_tim.c:202:6:USER_Change_PWM_Duty	40	static
+../Src/user_tim.c:180:6:USER_TIM17_Init_Timer	8	static
+../Src/user_tim.c:191:10:USER_Duty_Cycle	24	static
+../Src/user_tim.c:200:6:USER_Set_PWM_Duty	32	static
+../Src/user_tim.c:211:6:USER_Change_PWM_Duty	40	static

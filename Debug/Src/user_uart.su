@@ -1,5 +1,5 @@
 ../Src/user_uart.c:15:6:USER_USART1_Init	8	static
-../Src/user_uart.c:52:5:_write	32	static
-../Src/user_uart.c:61:6:USER_USART1_Send_8bit	16	static
-../Src/user_uart.c:66:6:USER_USART1_Transmit	24	static
-../Src/user_uart.c:71:9:USER_USART1_Receive_8bit	8	static
+../Src/user_uart.c:53:6:USER_USART1_Send_8bit	16	static
+../Src/user_uart.c:58:6:USER_USART1_Transmit	24	static
+../Src/user_uart.c:63:9:USER_USART1_Receive_8bit	8	static
+../Src/user_uart.c:70:5:_write	32	static

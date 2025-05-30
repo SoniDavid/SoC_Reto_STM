@@ -49,15 +49,7 @@ void USER_USART1_Init(void) {
 	USART1->CR1 |= (1UL << 5U);
 	NVIC_ISER0 = (1UL << 27);
 }
-int _write(int file, char *ptr, int len) {
-	int DataIdx;
-	for (DataIdx = 0; DataIdx < len; DataIdx++) {
-		while (!( USART1->ISR & (0x1UL << 7U)))
-			;
-		USART1->TDR = *ptr++;
-	}
-	return len;
-}
+
 void USER_USART1_Send_8bit(uint8_t Data) {
 	while (!( USART1->ISR & (0x1UL << 7U)))
 		; // wait until next data can be written
@@ -74,4 +66,11 @@ uint8_t USER_USART1_Receive_8bit(void) {
 	return (uint8_t) (USART1->RDR & 0xFF); // Lee el dato recibido
 }
 
-
+// The following makes printf() write to USART1:
+int _write(int file, uint8_t *ptr, int len) {
+  for (int i = 0; i < len; i++) {
+    while (!(USART1->ISR & (0x1UL << 7U))); // Wait for TXE
+    USART1->TDR = *ptr++;
+  }
+  return len;
+}

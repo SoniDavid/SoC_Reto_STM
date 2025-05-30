@@ -10,6 +10,7 @@
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
+
 //INCLUDE FILES
 #include <stdint.h>
 #include <stdio.h>
@@ -27,6 +28,7 @@
 
 //DEFINITIONS
 #define RX_BUFFER_SIZE 64
+#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 
 //GLOBAL VARIABLES
 volatile float rpm = 0.0f, vl = 0.0f;
@@ -38,6 +40,10 @@ volatile uint8_t package_ready = 0;
 volatile uint32_t tim16_tick = 0;
 char rx_buffer[RX_BUFFER_SIZE];
 uint8_t rx_index = 0;
+
+// for checking time
+uint16_t start, end, total;
+float t_inputs, t_outputs, t_tx;
 
 /* Superloop structure */
 int main(void) {
@@ -51,28 +57,59 @@ int main(void) {
   LCD_Init();					// Initialize LCD
   USER_ADC_Init();
   USER_TIM16_Init();
+  USER_TIM17_Init_Timer();
 
   //Local variables
   uint32_t start_tx = 0;
-//  uint32_t start_led = 0; // used only for debugging
+  uint32_t start_lcd = 0; // used only for debugging
 
   for (;;) {
     if (package_ready) {
-      package_ready = 0; //restart package ready
-      Update_PWM_From_Velocity(vl);
+      package_ready = 0;
     }
 
-    if (delay_elapsed(&start_tx, 100)){
-      Update_Inputs();
-      UpdateLCD();
-      GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
+    if (delay_elapsed(&start_tx, 50)) {
+      package_ready = 0;
+
+      // Measure UpdateInputs
+      TIM17->CNT = 0;
+      start = TIM17->CNT;
+      UpdateInputs();
+      end = TIM17->CNT;
+      total = end - start;
+      t_inputs = (1.0f / 48000000) * total * (TIM17->PSC + 1);
+
+      // Measure UpdateOutputs
+      TIM17->CNT = 0;
+      start = TIM17->CNT;
+      UpdateOutputs(vl);
+      end = TIM17->CNT;
+      total = end - start;
+      t_outputs = (1.0f / 48000000) * total * (TIM17->PSC + 1);
+
+      // Measure transmit_data
+      TIM17->CNT = 0;
+      start = TIM17->CNT;
+      transmit_data();
+      end = TIM17->CNT;
+      total = end - start;
+      t_tx = (1.0f / 48000000) * total * (TIM17->PSC + 1);
+
+      // ⬇️ Solo actualiza el LCD si han pasado 250 ms
+      if (delay_elapsed(&start_lcd, 250)) {
+        LCD_Show_InputTime();
+//        LCD_Show_TxTime();
+      }
+
+      // Toggle USER LED
+      GPIOA->ODR ^= (1UL << 5U);
     }
+  }
+}
     /*Used only for debugging*/
 //		if (delay_elapsed(&start_led, 100)) {
 //			GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
 //  }
-  }
-}
 
 void USART1_IRQHandler(void) {
    if (USART1->ISR & (1UL << 5U)) { // RXNE
@@ -95,7 +132,7 @@ void USART1_IRQHandler(void) {
           rpm = rpm_i1 + (rpm_i2 / 100.0f);
           vl = vl_i1 + (vl_i2 / 100.0f);
           gear = (float) gear_i;
-          paqueteListo = 1;
+          package_ready = 1;
         }
       } else if (rx_index < RX_BUFFER_SIZE - 1) {
         rx_buffer[rx_index++] = received;
@@ -110,19 +147,16 @@ void USART1_IRQHandler(void) {
 void transmit_data() {
   uint8_t tx_buffer[64];
 
-  int rpm_i = (int) (rpm * 100);
-  int vl_i = (int) (vl * 100);
-  int gear_i = (int) (gear);
   int acc_i1 = acceleration / 100;
   int acc_i2 = acceleration % 100;
   int btn_i = (int) (button_state);
 
-// Format everything as comma-separated values
-  sprintf((char*) tx_buffer, "I%d.%02d,%d.%02d,%d,%d.%02d,%d,E\n", rpm_i / 100,
-      rpm_i % 100, vl_i / 100, vl_i % 100, gear_i, acc_i1, acc_i2, btn_i);
+  // Format: I<acc_i1>.<acc_i2>,<button>,E
+  sprintf((char*) tx_buffer, "I%d.%02d,%d,E\n", acc_i1, acc_i2, btn_i);
 
   USER_USART1_Transmit(tx_buffer, strlen((char*) tx_buffer));
 }
+
 
 void TIM16_IRQHandler(void) {
   if (TIM16->SR & (1UL << 0)) {
@@ -139,10 +173,9 @@ uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks) {
   return 0;
 }
 
-void Update_Inputs(void) {
+void UpdateInputs(void) {
 // Read ADC and update global acceleration
   acceleration = USER_ADC_Read();
-
 // Read push button (PA6), 0 if pressed, 1 if not pressed
   button_state = (GPIOA->IDR & (1UL << 6U)) ? 0 : 1;
 }
@@ -173,6 +206,14 @@ void UpdateLCD(void){
   LCD_Set_Cursor(2, 8);
   LCD_Put_Str("Sp: ");
   LCD_Put_Num(vl);
-  transmit_data();
 }
+
+void UpdateOutputs(float input_vl){
+  UpdateLCD();
+  Update_PWM_From_Velocity(input_vl);
+}
+
+
+
+
 
