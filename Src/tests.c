@@ -114,30 +114,30 @@ void Control_PWM_With_ADC(void) {	//TESTED WORKING
 //
 //}
 
-void LCD_Show_InputTime(void) {
-  LCD_Clear();
-  LCD_Set_Cursor(1, 1);
-  LCD_Put_Str("Input Time:");
-  LCD_Set_Cursor(2, 1);
-  LCD_Put_Num((int)(t_inputs * 1e8));
-  LCD_Put_Str(" us");
-}
-
-void LCD_Show_OutputTime(void) {
-  LCD_Clear();
-  LCD_Set_Cursor(1, 1);
-  LCD_Put_Str("Output Time:");
-  LCD_Set_Cursor(2, 1);
-  LCD_Put_Num((int)(t_outputs * 1e8));
-  LCD_Put_Str(" us");
-}
-
-void LCD_Show_TxTime(void) {
-  LCD_Clear();
-  LCD_Set_Cursor(1, 1);
-  LCD_Put_Str("TX Time:");
-  LCD_Set_Cursor(2, 1);
-  LCD_Put_Num((int)(t_tx * 1e8));
-  LCD_Put_Str(" us");
-}
+//void LCD_Show_InputTime(void) {
+//  LCD_Clear();
+//  LCD_Set_Cursor(1, 1);
+//  LCD_Put_Str("Input Time:");
+//  LCD_Set_Cursor(2, 1);
+//  LCD_Put_Num((int)(t_inputs * 1e8));
+//  LCD_Put_Str(" us");
+//}
+//
+//void LCD_Show_OutputTime(void) {
+//  LCD_Clear();
+//  LCD_Set_Cursor(1, 1);
+//  LCD_Put_Str("Output Time:");
+//  LCD_Set_Cursor(2, 1);
+//  LCD_Put_Num((int)(t_outputs * 1e8));
+//  LCD_Put_Str(" us");
+//}
+//
+//void LCD_Show_TxTime(void) {
+//  LCD_Clear();
+//  LCD_Set_Cursor(1, 1);
+//  LCD_Put_Str("TX Time:");
+//  LCD_Set_Cursor(2, 1);
+//  LCD_Put_Num((int)(t_tx * 1e8));
+//  LCD_Put_Str(" us");
+//}
 

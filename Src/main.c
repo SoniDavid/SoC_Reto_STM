@@ -54,6 +54,7 @@ int main(void) {
   USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
   USER_TIM14_Init();			// Enable TIM14 for Delay
   USER_USART1_Init();			// Enable Full-Duplex UART communication
+  USER_UART2_Init();
   LCD_Init();					// Initialize LCD
   USER_ADC_Init();
   USER_TIM16_Init();
@@ -61,55 +62,56 @@ int main(void) {
 
   //Local variables
   uint32_t start_tx = 0;
-  uint32_t start_lcd = 0; // used only for debugging
+  uint32_t start_led = 0; // used only for debugging
 
-  for (;;) {
+  for(;;){
     if (package_ready) {
       package_ready = 0;
     }
 
-    if (delay_elapsed(&start_tx, 50)) {
-      package_ready = 0;
+    if (delay_elapsed(&start_tx, 100)) {
+      // TIM tick period in nanoseconds: (1 / 48MHz) = 20.83 ns per tick, scaled as integer
+      // So we work in nanoseconds, then convert to microseconds
+      // Tick period in microseconds, scaled by 1000 to preserve decimals
+      uint32_t tick_us_x1000 = ((TIM17->PSC + 1) * 1000000UL * 1000UL) / 48000000UL;
+      uint32_t time_us_x1000;
 
-      // Measure UpdateInputs
+      // Update Inputs
       TIM17->CNT = 0;
       start = TIM17->CNT;
       UpdateInputs();
       end = TIM17->CNT;
       total = end - start;
-      t_inputs = (1.0f / 48000000) * total * (TIM17->PSC + 1);
+      time_us_x1000 = total * tick_us_x1000;
+      printf("UpdateInputs Time: %lu.%03lu us\r\n", time_us_x1000 / 1000, time_us_x1000 % 1000);
 
-      // Measure UpdateOutputs
+      // Update Outputs
       TIM17->CNT = 0;
       start = TIM17->CNT;
       UpdateOutputs(vl);
       end = TIM17->CNT;
       total = end - start;
-      t_outputs = (1.0f / 48000000) * total * (TIM17->PSC + 1);
+      time_us_x1000 = total * tick_us_x1000;
+      printf("UpdateOutputs Time: %lu.%03lu us\r\n", time_us_x1000 / 1000, time_us_x1000 % 1000);
 
-      // Measure transmit_data
+      // Transmit Data
       TIM17->CNT = 0;
       start = TIM17->CNT;
       transmit_data();
       end = TIM17->CNT;
       total = end - start;
-      t_tx = (1.0f / 48000000) * total * (TIM17->PSC + 1);
+      time_us_x1000 = total * tick_us_x1000;
+      printf("Transmit Time: %lu.%03lu us\r\n", time_us_x1000 / 1000, time_us_x1000 % 1000);
 
-      // ⬇️ Solo actualiza el LCD si han pasado 250 ms
-      if (delay_elapsed(&start_lcd, 250)) {
-        LCD_Show_InputTime();
-//        LCD_Show_TxTime();
-      }
 
-      // Toggle USER LED
-      GPIOA->ODR ^= (1UL << 5U);
+    }
+
+    if (delay_elapsed(&start_led, 100)) {
+      GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
     }
   }
 }
-    /*Used only for debugging*/
-//		if (delay_elapsed(&start_led, 100)) {
-//			GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
-//  }
+
 
 void USART1_IRQHandler(void) {
    if (USART1->ISR & (1UL << 5U)) { // RXNE
