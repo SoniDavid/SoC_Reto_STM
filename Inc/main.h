@@ -78,7 +78,8 @@ typedef struct {
 void Update_PWM_From_Velocity(float);
 void UpdateLCD(void);
 void UpdateOutputs(float);
-
+void UpdateInputs_Init();
+void UpdateOutputs_Init();
 
 // For UART communication
 void transmit_data(void);
@@ -86,8 +87,6 @@ uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks);
 void USART1_IRQHandler(void);
 void TIM16_IRQHandler(void);
 void UpdateInputs(void);
-
-
 
 
 #endif /* MAIN_H_ */

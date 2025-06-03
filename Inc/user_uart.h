@@ -31,6 +31,9 @@ typedef struct
 #define USART1_BASE	0x40013800//		USART1 base address
 #define USART1	(( USART_TypeDef 	*)USART1_BASE )
 
+#define USART2_BASE 0x40004400UL
+#define USART2 ((USART_TypeDef *) USART2_BASE)
+
 void USER_USART1_Init( void );
 void USER_USART1_Transmit( uint8_t *pData, uint16_t size );
 void USER_USART1_Send_8bit(uint8_t Data);
@@ -39,6 +42,5 @@ void USART1_IRQHandler(void);
 
 // User UART
 void USER_UART2_Init( void );
-void USER_UART2_Transmit( uint8_t *pData, uint16_t size );
 
 #endif /* UART_H_ */

@@ -1,5 +1,6 @@
 ../Src/user_uart.c:15:6:USER_USART1_Init	1
-../Src/user_uart.c:53:6:USER_USART1_Send_8bit	2
-../Src/user_uart.c:58:6:USER_USART1_Transmit	2
-../Src/user_uart.c:63:9:USER_USART1_Receive_8bit	2
-../Src/user_uart.c:70:5:_write	3
+../Src/user_uart.c:53:6:USER_UART2_Init	1
+../Src/user_uart.c:76:6:USER_USART1_Send_8bit	2
+../Src/user_uart.c:81:6:USER_USART1_Transmit	2
+../Src/user_uart.c:86:9:USER_USART1_Receive_8bit	2
+../Src/user_uart.c:93:5:_write	3
