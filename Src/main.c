@@ -43,22 +43,54 @@ uint8_t rx_index = 0;
 
 // for checking time
 uint16_t start, end, total;
-float t_inputs, t_outputs, t_tx;
+float timeS1, timeS2, timeS3, timeE, timeT;;
 
 /* Superloop structure */
 int main(void) {
   /* Initialization of Peripherals */
   USER_RCC_Init(); 				// Set CLK to 48MHz
   USER_SysTick_Init();		//
-  USER_GPIO_Init();				// Initialize push button (break)
-  USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
+  //USER_GPIO_Init();				// Initialize push button (break)
+  //USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
   USER_TIM14_Init();			// Enable TIM14 for Delay
-  USER_USART1_Init();			// Enable Full-Duplex UART communication
+  //USER_USART1_Init();			// Enable Full-Duplex UART communication
   USER_UART2_Init();
-  LCD_Init();					// Initialize LCD
-  USER_ADC_Init();
+  //LCD_Init();					// Initialize LCD
+  //USER_ADC_Init();
   USER_TIM16_Init();
   USER_TIM17_Init_Timer();
+
+  uint32_t t_ms;
+
+  //Init time of update inputs
+  TIM17->CNT = 0;
+  start = TIM17->CNT;
+  UpdateInputs_Init();
+  end = TIM17->CNT;
+  total = end - start;
+  timeS1 = (1.0 / 48000000) * total * ( TIM17->PSC + 1) * 1000;
+  t_ms = (uint32_t)(timeS1 * 1000);
+  printf("Time1 is: %lu.%03lu ms\r\n", t_ms/1000, t_ms % 1000);
+
+  //Init time of update inputs
+  TIM17->CNT = 0;
+  start = TIM17->CNT;
+  UpdateOutputs_Init();
+  end = TIM17->CNT;
+  total = end - start;
+  timeS2 = (1.0 / 48000000) * total * ( TIM17->PSC + 1) * 1000;
+  t_ms = (uint32_t)(timeS2 * 1000);
+  printf("Time2 is: %lu.%03lu ms\r\n", t_ms/1000, t_ms % 1000);
+
+  //Init time of transmit
+  TIM17->CNT = 0;
+  start = TIM17->CNT;
+  USER_USART1_Init();     // Enable Full-Duplex UART communication
+  end = TIM17->CNT;
+  total = end - start;
+  timeS3 = (1.0 / 48000000) * total * ( TIM17->PSC + 1) * 1000;
+  t_ms = (uint32_t)(timeS3 * 1000);
+  printf("Time3 is: %lu.%03lu ms\r\n", t_ms/1000, t_ms % 1000);
 
   //Local variables
   uint32_t start_tx = 0;
@@ -73,8 +105,8 @@ int main(void) {
       // TIM tick period in nanoseconds: (1 / 48MHz) = 20.83 ns per tick, scaled as integer
       // So we work in nanoseconds, then convert to microseconds
       // Tick period in microseconds, scaled by 1000 to preserve decimals
-      uint32_t tick_us_x1000 = ((TIM17->PSC + 1) * 1000000UL * 1000UL) / 48000000UL;
-      uint32_t time_us_x1000;
+      //uint32_t tick_us_x1000 = (TIM17->PSC + 1) * (1.0 / 48000000UL);
+      //uint32_t time_us_x1000;
 
       // Update Inputs
       TIM17->CNT = 0;
@@ -82,8 +114,10 @@ int main(void) {
       UpdateInputs();
       end = TIM17->CNT;
       total = end - start;
-      time_us_x1000 = total * tick_us_x1000;
-      printf("UpdateInputs Time: %lu.%03lu us\r\n", time_us_x1000 / 1000, time_us_x1000 % 1000);
+      timeE = total * (TIM17->PSC + 1) * (1.0 / 48000000) * 1000;
+      timeT = timeS1 + timeE;
+      t_ms = (uint32_t)(timeT * 1000);
+      printf("UpdateInputs Time: %lu.%03lu ms\r\n", t_ms / 1000, t_ms % 1000);
 
       // Update Outputs
       TIM17->CNT = 0;
@@ -91,8 +125,10 @@ int main(void) {
       UpdateOutputs(vl);
       end = TIM17->CNT;
       total = end - start;
-      time_us_x1000 = total * tick_us_x1000;
-      printf("UpdateOutputs Time: %lu.%03lu us\r\n", time_us_x1000 / 1000, time_us_x1000 % 1000);
+      timeE = total * (TIM17->PSC + 1) * (1.0 / 48000000) * 1000;
+      timeT = timeS2 + timeE;
+      t_ms = (uint32_t)(timeT * 1000);
+      printf("UpdateOutputs Time: %lu.%03lu ms\r\n", t_ms / 1000, t_ms % 1000);
 
       // Transmit Data
       TIM17->CNT = 0;
@@ -100,9 +136,10 @@ int main(void) {
       transmit_data();
       end = TIM17->CNT;
       total = end - start;
-      time_us_x1000 = total * tick_us_x1000;
-      printf("Transmit Time: %lu.%03lu us\r\n", time_us_x1000 / 1000, time_us_x1000 % 1000);
-
+      timeE = total * (TIM17->PSC + 1) * (1.0 / 48000000) * 1000;
+      timeT = timeS3 + timeE;
+      t_ms = (uint32_t)(timeT * 1000);
+      printf("Transmit Time: %lu.%03lu ms\r\n", t_ms / 1000, t_ms % 1000);
 
     }
 
@@ -146,6 +183,28 @@ void USART1_IRQHandler(void) {
   }
 }
 
+void UpdateInputs_Init(){
+  USER_GPIO_Init();
+  USER_ADC_Init();
+}
+
+void UpdateOutputs_Init(){
+  LCD_Init();
+  USER_TIM3_PWM_Init();
+}
+
+void UpdateInputs(void) {
+// Read ADC and update global acceleration
+  acceleration = USER_ADC_Read();
+// Read push button (PA6), 0 if pressed, 1 if not pressed
+  button_state = (GPIOA->IDR & (1UL << 6U)) ? 0 : 1;
+}
+
+void UpdateOutputs(float input_vl){
+  UpdateLCD();
+  Update_PWM_From_Velocity(input_vl);
+}
+
 void transmit_data() {
   uint8_t tx_buffer[64];
 
@@ -159,27 +218,12 @@ void transmit_data() {
   USER_USART1_Transmit(tx_buffer, strlen((char*) tx_buffer));
 }
 
-
-void TIM16_IRQHandler(void) {
-  if (TIM16->SR & (1UL << 0)) {
-    TIM16->SR &= ~(1UL << 0);
-    tim16_tick++;
-  }
-}
-
 uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks) {
   if ((tim16_tick - *start) >= n_ticks) {
     *start = tim16_tick;
     return 1;
   }
   return 0;
-}
-
-void UpdateInputs(void) {
-// Read ADC and update global acceleration
-  acceleration = USER_ADC_Read();
-// Read push button (PA6), 0 if pressed, 1 if not pressed
-  button_state = (GPIOA->IDR & (1UL << 6U)) ? 0 : 1;
 }
 
 void Update_PWM_From_Velocity(float input_vl) {
@@ -210,10 +254,13 @@ void UpdateLCD(void){
   LCD_Put_Num(vl);
 }
 
-void UpdateOutputs(float input_vl){
-  UpdateLCD();
-  Update_PWM_From_Velocity(input_vl);
+void TIM16_IRQHandler(void) {
+  if (TIM16->SR & (1UL << 0)) {
+    TIM16->SR &= ~(1UL << 0);
+    tim16_tick++;
+  }
 }
+
 
 
 
