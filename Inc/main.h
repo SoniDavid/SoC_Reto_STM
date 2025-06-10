@@ -10,6 +10,20 @@
 
 #include <stdint.h>
 
+//Structure data
+typedef struct
+{
+	uint16_t rpm;
+	uint16_t vl;
+	uint16_t gear;
+} message_outputs;
+
+typedef struct
+{
+	uint8_t button_state;
+	uint16_t acceleration;
+} message_inputs;
+
 /* Embedded FLASH memory registers */
 typedef struct {
   volatile uint32_t ACR;
@@ -74,19 +88,18 @@ typedef struct {
 #define GPIOA	(( GPIO_TypeDef *)GPIOA_BASE )
 #define GPIOB	(( GPIO_TypeDef *)GPIOB_BASE )
 
+/* RTOS */
+void UpdateInputs( void *pvParameters );
+void UpdateOutputs( void *pvParameters );
+void transmit_data( void *pvParameters );
+
 /*FUNCTIONS*/
-void Update_PWM_From_Velocity(float);
-void UpdateLCD(void);
-void UpdateOutputs(float);
-void UpdateInputs_Init();
-void UpdateOutputs_Init();
+void Update_PWM_From_Velocity(uint16_t);
+void UpdateLCD(uint16_t, uint16_t, uint16_t);
 
 // For UART communication
-void transmit_data(void);
 uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks);
 void USART1_IRQHandler(void);
 void TIM16_IRQHandler(void);
-void UpdateInputs(void);
-
 
 #endif /* MAIN_H_ */

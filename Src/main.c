@@ -6,7 +6,7 @@
  ******************************************************************************
  */
 
-#if !defined(__SOFT_FP__) && defined(__ARM_FP)
+#if !defined(_SOFT_FP) && defined(_ARM_FP)
   #warning "FPU is not initialized, but the project is compiling for an FPU. Please initialize the FPU before use."
 #endif
 
@@ -26,126 +26,80 @@
 #include "user_adc.h"
 #include "tests.h"
 
+//RTOS
+#include "FreeRTOSConfig.h"
+#include "app_freertos.h"
+#include "queue.h"
+
 //DEFINITIONS
-#define RX_BUFFER_SIZE 64
+#define RX_BUFFER_SIZE 32
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
 
+//RTOS
+TaskHandle_t hTask_UpdateInputs;
+TaskHandle_t hTask_UpdateOutputs;
+TaskHandle_t hTask_Transmit_data;
+
+QueueHandle_t xQueueI, xQueueO;
+
 //GLOBAL VARIABLES
-volatile float rpm = 0.0f, vl = 0.0f;
-volatile float gear = 0.0f;
 volatile uint16_t acceleration = 0;
 volatile uint8_t button_state = 0;
-volatile uint8_t package_ready = 0;
 
 volatile uint32_t tim16_tick = 0;
-char rx_buffer[RX_BUFFER_SIZE];
-uint8_t rx_index = 0;
-
-// for checking time
-uint16_t start, end, total;
-float timeS1, timeS2, timeS3, timeE, timeT;;
 
 /* Superloop structure */
 int main(void) {
   /* Initialization of Peripherals */
   USER_RCC_Init(); 				// Set CLK to 48MHz
-  USER_SysTick_Init();		//
-  //USER_GPIO_Init();				// Initialize push button (break)
-  //USER_TIM3_PWM_Init();		// Set TIM3 CH1-4 to PWM
-  USER_TIM14_Init();			// Enable TIM14 for Delay
-  //USER_USART1_Init();			// Enable Full-Duplex UART communication
+  USER_SysTick_Init();			//
+
+  // Initialize Inputs
+  USER_GPIO_Init();				// Initialize push button (break)
+  USER_TIM3_PWM_Init();			// Set TIM3 CH1-4 to PWM
+
+  // UARTs
+  USER_USART1_Init();			// Enable Full-Duplex UART communication
   USER_UART2_Init();
+
+  // Initialize Outputs
   //LCD_Init();					// Initialize LCD
-  //USER_ADC_Init();
+  USER_ADC_Init();
+
+  //Timers
+  USER_TIM14_Init();			// Enable TIM14 for Delay
   USER_TIM16_Init();
   USER_TIM17_Init_Timer();
 
-  uint32_t t_ms;
+  // Create Task
+  xTaskCreate(UpdateInputs, "UpdateInputs", 32, NULL, 1, &hTask_UpdateInputs);
+  xTaskCreate(UpdateOutputs, "UpdateOutputs", 32, NULL, 2, &hTask_UpdateOutputs);
+  xTaskCreate(transmit_data, "Transmit_data", 32, NULL, 3, &hTask_Transmit_data);
 
-  //Init time of update inputs
-  TIM17->CNT = 0;
-  start = TIM17->CNT;
-  UpdateInputs_Init();
-  end = TIM17->CNT;
-  total = end - start;
-  timeS1 = (1.0 / 48000000) * total * ( TIM17->PSC + 1) * 1000;
-  t_ms = (uint32_t)(timeS1 * 1000);
-  printf("Time1 is: %lu.%03lu ms\r\n", t_ms/1000, t_ms % 1000);
-
-  //Init time of update inputs
-  TIM17->CNT = 0;
-  start = TIM17->CNT;
-  UpdateOutputs_Init();
-  end = TIM17->CNT;
-  total = end - start;
-  timeS2 = (1.0 / 48000000) * total * ( TIM17->PSC + 1) * 1000;
-  t_ms = (uint32_t)(timeS2 * 1000);
-  printf("Time2 is: %lu.%03lu ms\r\n", t_ms/1000, t_ms % 1000);
-
-  //Init time of transmit
-  TIM17->CNT = 0;
-  start = TIM17->CNT;
-  USER_USART1_Init();     // Enable Full-Duplex UART communication
-  end = TIM17->CNT;
-  total = end - start;
-  timeS3 = (1.0 / 48000000) * total * ( TIM17->PSC + 1) * 1000;
-  t_ms = (uint32_t)(timeS3 * 1000);
-  printf("Time3 is: %lu.%03lu ms\r\n", t_ms/1000, t_ms % 1000);
+  //Create Queues
+  xQueueI = xQueueCreate( 3, sizeof(struct message_inputs * ));
+  xQueueO = xQueueCreate( 3, sizeof(struct message_outputs * ));
 
   //Local variables
   uint32_t start_tx = 0;
   uint32_t start_led = 0; // used only for debugging
 
+  // Start the scheduler
+  //printf("works1\r\n");
+  vTaskStartScheduler();
+  //printf("works2\r\n");
+
+  GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
+
   for(;;){
-    if (package_ready) {
-      package_ready = 0;
-    }
-
-    if (delay_elapsed(&start_tx, 100)) {
-      // TIM tick period in nanoseconds: (1 / 48MHz) = 20.83 ns per tick, scaled as integer
-      // So we work in nanoseconds, then convert to microseconds
-      // Tick period in microseconds, scaled by 1000 to preserve decimals
-      //uint32_t tick_us_x1000 = (TIM17->PSC + 1) * (1.0 / 48000000UL);
-      //uint32_t time_us_x1000;
-
-      // Update Inputs
-      TIM17->CNT = 0;
-      start = TIM17->CNT;
-      UpdateInputs();
-      end = TIM17->CNT;
-      total = end - start;
-      timeE = total * (TIM17->PSC + 1) * (1.0 / 48000000) * 1000;
-      timeT = timeS1 + timeE;
-      t_ms = (uint32_t)(timeT * 1000);
-      printf("UpdateInputs Time: %lu.%03lu ms\r\n", t_ms / 1000, t_ms % 1000);
-
-      // Update Outputs
-      TIM17->CNT = 0;
-      start = TIM17->CNT;
-      UpdateOutputs(vl);
-      end = TIM17->CNT;
-      total = end - start;
-      timeE = total * (TIM17->PSC + 1) * (1.0 / 48000000) * 1000;
-      timeT = timeS2 + timeE;
-      t_ms = (uint32_t)(timeT * 1000);
-      printf("UpdateOutputs Time: %lu.%03lu ms\r\n", t_ms / 1000, t_ms % 1000);
-
-      // Transmit Data
-      TIM17->CNT = 0;
-      start = TIM17->CNT;
-      transmit_data();
-      end = TIM17->CNT;
-      total = end - start;
-      timeE = total * (TIM17->PSC + 1) * (1.0 / 48000000) * 1000;
-      timeT = timeS3 + timeE;
-      t_ms = (uint32_t)(timeT * 1000);
-      printf("Transmit Time: %lu.%03lu ms\r\n", t_ms / 1000, t_ms % 1000);
-
-    }
-
-    if (delay_elapsed(&start_led, 100)) {
-      GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
-    }
+	  //printf("works\r\n");
+	  if(delay_elapsed(&start_tx, 100)){
+		  //printf("works\r\n");
+	  }
+	  if(delay_elapsed(&start_led, 100)) {
+		  //printf("works2\r\n");
+		  GPIOA->ODR ^= (0x1UL << 5U); // Toggle USER LED
+	  }
   }
 }
 
@@ -153,6 +107,8 @@ int main(void) {
 void USART1_IRQHandler(void) {
    if (USART1->ISR & (1UL << 5U)) { // RXNE
     uint8_t received = (uint8_t) (USART1->RDR & 0xFF);
+    char rx_buffer[RX_BUFFER_SIZE] = {0};
+    uint8_t rx_index = 0;
 
     if (received == 'I') {
       rx_index = 0;
@@ -165,13 +121,19 @@ void USART1_IRQHandler(void) {
       if (received == 'E') {
         rx_buffer[rx_index] = '\0';
 
-        int rpm_i1, rpm_i2, vl_i1, vl_i2, gear_i;
-        if (sscanf(&rx_buffer[1], "%d,%d,%d,%d,%d,", &rpm_i1, &rpm_i2, &vl_i1,
+        uint8_t rpm_i2, vl_i1, vl_i2, gear_i;
+        uint16_t rpm_i1;
+        if (sscanf(&rx_buffer[1], "%hu,%hhu,%hhu,%hhu,%hhu,", &rpm_i1, &rpm_i2, &vl_i1,
             &vl_i2, &gear_i) == 5) {
-          rpm = rpm_i1 + (rpm_i2 / 100.0f);
-          vl = vl_i1 + (vl_i2 / 100.0f);
-          gear = (float) gear_i;
-          package_ready = 1;
+          message_outputs data;
+          data.rpm = rpm_i1 * 100 + rpm_i2;
+          data.vl = vl_i1 * 100 + vl_i2;
+          data.gear = gear_i;
+          if(xQueueSend(xQueueO, &data, 10 ) != pdPASS)
+          {
+        	  xQueueReceive(xQueueO, &data, 0);
+        	  xQueueSend(xQueueO, &data, 10);
+          }
         }
       } else if (rx_index < RX_BUFFER_SIZE - 1) {
         rx_buffer[rx_index++] = received;
@@ -183,39 +145,65 @@ void USART1_IRQHandler(void) {
   }
 }
 
-void UpdateInputs_Init(){
-  USER_GPIO_Init();
-  USER_ADC_Init();
+void UpdateInputs(void *pvParameters) {
+	message_inputs data;
+	TickType_t xLastWakeTime = xTaskGetTickCount();;
+	for(;;){
+		//printf("worksTask1\r\n");
+		// Read ADC and update global acceleration
+		data.acceleration = USER_ADC_Read();
+		// Read push button (PA6), 0 if pressed, 1 if not pressed
+		data.button_state = (GPIOA->IDR & (1UL << 6U)) ? 0 : 1;
+
+		//printf("send %d \r\n", data.acceleration);
+		if(xQueueSend(xQueueI, &data, 10) != pdPASS)
+		{
+			//printf("send\r\n");
+			xQueueReceive(xQueueI, &data, 0);
+			xQueueSend(xQueueI, &data, 10);
+		}
+		vTaskDelayUntil(&xLastWakeTime, 10);
+	}
 }
 
-void UpdateOutputs_Init(){
-  LCD_Init();
-  USER_TIM3_PWM_Init();
+void UpdateOutputs(void *pvParameters){
+	message_outputs data;
+	TickType_t xLastWakeTime = xTaskGetTickCount();;
+	for(;;)
+	{
+		//printf("worksTask2\r\n");
+		if(xQueueReceive(xQueueO, &data, 10) == pdPASS){
+			//printf("worksTask2\r\n");
+			//UpdateLCD(data.rpm, data.gear, data.vl);
+			Update_PWM_From_Velocity(data.vl);
+		}
+		vTaskDelayUntil(&xLastWakeTime, 500);
+	}
 }
 
-void UpdateInputs(void) {
-// Read ADC and update global acceleration
-  acceleration = USER_ADC_Read();
-// Read push button (PA6), 0 if pressed, 1 if not pressed
-  button_state = (GPIOA->IDR & (1UL << 6U)) ? 0 : 1;
-}
+void transmit_data(void *pvParameters) {
+  uint8_t tx_buffer[32];
+  uint8_t acc_i1 = 0.0;
+  uint8_t acc_i2 = 0.0;
+  uint8_t btn_i = 0.0;
+  message_inputs data;
+  TickType_t xLastWakeTime = xTaskGetTickCount();;
 
-void UpdateOutputs(float input_vl){
-  UpdateLCD();
-  Update_PWM_From_Velocity(input_vl);
-}
+  for(;;){
+	  //printf("worksTask3\r\n");
+	  if(xQueueReceive(xQueueI, &data, 10) == pdPASS){
+		  acc_i1 = data.acceleration / 100;
+		  acc_i2 = data.acceleration % 100;
+		  btn_i = (uint8_t) (data.button_state);
+		  //printf("worksTask3 %d\r\n", acc_i1);
 
-void transmit_data() {
-  uint8_t tx_buffer[64];
+		  // Format: I<acc_i1>.<acc_i2>,<button>,E
+		  sprintf((char*) tx_buffer, "I%d.%02d,%d,E\n", acc_i1, acc_i2, btn_i);
 
-  int acc_i1 = acceleration / 100;
-  int acc_i2 = acceleration % 100;
-  int btn_i = (int) (button_state);
-
-  // Format: I<acc_i1>.<acc_i2>,<button>,E
-  sprintf((char*) tx_buffer, "I%d.%02d,%d,E\n", acc_i1, acc_i2, btn_i);
-
-  USER_USART1_Transmit(tx_buffer, strlen((char*) tx_buffer));
+		  USER_USART1_Transmit(tx_buffer, strlen((char*) tx_buffer));
+	  }
+	  vTaskDelayUntil(&xLastWakeTime, 300);
+  }
 }
 
 uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks) {
@@ -226,20 +214,20 @@ uint8_t delay_elapsed(uint32_t *start, uint32_t n_ticks) {
   return 0;
 }
 
-void Update_PWM_From_Velocity(float input_vl) {
-// Clamp the input to [0.0, 200.0] for safety
-  if (input_vl < 0.0f)
-    input_vl = 0.0f;
-  if (input_vl > 200.0f)
-    input_vl = 200.0f;
+void Update_PWM_From_Velocity(uint16_t input_vl) {
+	// Clamp the input to [0.0, 200.0] for safety
+	if (input_vl < 0)
+		input_vl = 0;
+	if (input_vl > 200)
+		input_vl = 200;
 
-// Map velocity to 0–100% PWM duty
-  uint8_t duty = (uint8_t) ((input_vl / 200.0f) * 100.0f);
+	// Map velocity to 0–100% PWM duty
+	uint8_t duty = (uint8_t) ((input_vl / 200.0f) * 100.0f);
 
-  USER_Set_PWM_Duty(duty);
+	USER_Set_PWM_Duty(duty);
 }
 
-void UpdateLCD(void){
+void UpdateLCD(uint16_t rpm, uint16_t gear, uint16_t vl){
   LCD_Clear();
   LCD_Set_Cursor(1, 1);
   LCD_Put_Str("Rpm: ");
@@ -260,9 +248,3 @@ void TIM16_IRQHandler(void) {
     tim16_tick++;
   }
 }
-
-
-
-
-
-
