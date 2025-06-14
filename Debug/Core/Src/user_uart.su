@@ -1,0 +1,6 @@
+../Core/Src/user_uart.c:13:6:USER_USART1_Init	8	static
+../Core/Src/user_uart.c:51:6:USER_UART2_Init	8	static
+../Core/Src/user_uart.c:74:6:USER_USART1_Send_8bit	16	static
+../Core/Src/user_uart.c:79:6:USER_USART1_Transmit	24	static
+../Core/Src/user_uart.c:84:9:USER_USART1_Receive_8bit	8	static
+../Core/Src/user_uart.c:92:5:_write	32	static
