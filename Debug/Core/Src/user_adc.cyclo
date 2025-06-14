@@ -1,0 +1,2 @@
+../Core/Src/user_adc.c:13:6:USER_ADC_Init	6
+../Core/Src/user_adc.c:59:10:USER_ADC_Read	2

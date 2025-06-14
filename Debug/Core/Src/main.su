@@ -1,0 +1,11 @@
+../Core/Src/main.c:49:5:main	16	static
+../Core/Src/main.c:91:6:USART1_IRQHandler	56	static
+../Core/Src/main.c:131:6:UpdateInputs	32	static
+../Core/Src/main.c:151:6:UpdateOutputs	40	static
+../Core/Src/main.c:165:6:transmit_data	72	static
+../Core/Src/main.c:183:6:Update_PWM_From_Velocity	16	static
+../Core/Src/main.c:194:6:BridgeUART_data	32	static
+../Core/Src/main.c:211:6:UpdateLCD	24	static
+../Core/Src/main.c:227:6:USER_GPIO_Init	8	static
+../Core/Src/main.c:244:6:USER_RCC_Init	8	static
+../Core/Src/main.c:256:6:L298N_Init	8	static
